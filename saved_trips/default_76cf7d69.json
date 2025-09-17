@@ -1,0 +1,24 @@
+{
+  "trip_id": "76cf7d69",
+  "user_id": "default",
+  "created_at": "2025-09-17T14:45:48.147552",
+  "trip_data": {
+    "trip_name": "Tokyo Adventure",
+    "trip_summary": "Cultural exploration",
+    "form_data": {
+      "destination": "Tokyo",
+      "duration": 5,
+      "travel_type": "Cultural",
+      "budget": "Medium",
+      "group_size": 2,
+      "accommodation": "Hotels",
+      "special_requests": ""
+    },
+    "itinerary": {
+      "demo_response": "*Note: This is a demo response. Configure your Gemini API key for personalized AI-powered recommendations.*\n# 5-Day Trip to Tokyo\n\n## Day 1: Arrival & Exploration\n- **Morning**: Arrive and check into accommodation\n- **Afternoon**: Explore the city center and main attractions\n- **Evening**: Try local cuisine at a recommended restaurant\n\n## Day 2: Cultural Focus\n- **Morning**: Visit top-rated attractions based on your cultural preference\n- **Afternoon**: Continue exploring with medium options\n- **Evening**: Relax and enjoy local entertainment\n\n*For a fully personalized itinerary with real-time recommendations, weather updates, and booking links, please configure your Gemini API key.*\n\n**Budget Estimate**: Varies based on your medium preference\n**Best Time to Visit**: Check local weather and seasonal recommendations\n**Transportation**: Local transport options available\n\nWould you like me to help you refine any part of this itinerary?",
+      "generated_at": "2025-09-17T14:45:48.147552",
+      "demo_mode": true
+    },
+    "saved_at": "2025-09-17T14:45:48.147552"
+  }
+}
