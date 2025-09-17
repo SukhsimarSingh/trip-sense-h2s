@@ -1,0 +1,16 @@
+Plan a trip with the following preferences:
+
+Destination: {{ destination }}
+Duration: {{ duration }}
+Group size: {{ group_size }}
+Travel style: {{ travel_type }}
+Budget: {{ budget }}
+Accommodation preference: {{ accommodation }}
+{% if special_requests %}Special requests: {{ special_requests }}{% endif %}
+
+Please create a detailed, conversational itinerary with:
+1) A day-by-day plan with specific recommendations
+2) Practical tips and travel advice
+3) Budget estimates and booking suggestions
+
+Format your response in clear markdown with headings and bullet points for easy reading.

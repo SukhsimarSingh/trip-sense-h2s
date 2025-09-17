@@ -1,0 +1,24 @@
+{
+  "trip_id": "bf12d481",
+  "user_id": "default",
+  "created_at": "2025-09-17T14:48:48.827549",
+  "trip_data": {
+    "trip_name": "London Cultural Experience",
+    "trip_summary": "Solo cultural trip focusing on museums and galleries",
+    "form_data": {
+      "destination": "London",
+      "duration": 4,
+      "travel_type": "Cultural",
+      "budget": "High Budget",
+      "group_size": 1,
+      "accommodation": "Hotels",
+      "special_requests": "Museums and galleries"
+    },
+    "itinerary": {
+      "demo_response": "*Note: This is a demo response. Configure your Gemini API key for personalized AI-powered recommendations.*\n# 4-Day Trip to London\n\n## Day 1: Arrival & Exploration\n- **Morning**: Arrive and check into accommodation\n- **Afternoon**: Explore the city center and main attractions\n- **Evening**: Try local cuisine at a recommended restaurant\n\n## Day 2: Cultural Focus\n- **Morning**: Visit top-rated attractions based on your cultural preference\n- **Afternoon**: Continue exploring with high budget options\n- **Evening**: Relax and enjoy local entertainment\n\n*For a fully personalized itinerary with real-time recommendations, weather updates, and booking links, please configure your Gemini API key.*\n\n**Budget Estimate**: Varies based on your high budget preference\n**Best Time to Visit**: Check local weather and seasonal recommendations\n**Transportation**: Local transport options available\n\nWould you like me to help you refine any part of this itinerary?",
+      "generated_at": "2025-09-17T14:48:48.827549",
+      "demo_mode": true
+    },
+    "saved_at": "2025-09-17T14:48:48.827549"
+  }
+}
