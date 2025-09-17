@@ -76,10 +76,9 @@ def render_sidebar():
                 if st.button(page_info["label"], key=f"nav_{page_key}", use_container_width=True):
                     # Special handling for certain page transitions
                     if page_key == "form":
-                        # Reset trip data when starting new trip planning
-                        st.session_state.trip_data = {}
-                        if "messages" in st.session_state:
-                            del st.session_state.messages
+                        # Don't reset trip data when navigating back to form - preserve it for editing
+                        # Only reset if explicitly starting a new trip
+                        pass
                     elif page_key == "chatbot" and not st.session_state.trip_data:
                         # If trying to go to chatbot without trip data, redirect to form
                         st.session_state.page = "form"
@@ -116,8 +115,12 @@ def render_sidebar():
             if st.button("🔄 Start New Trip", use_container_width=True):
                 st.session_state.page = "landing"
                 st.session_state.trip_data = {}
+                st.session_state.form_data = {}  # Also clear form data
                 if "messages" in st.session_state:
                     del st.session_state.messages
+                # Clear trip data from AI instance
+                trip_planner_ai.current_trip_data = None
+                trip_planner_ai.current_itinerary_data = None
                 st.rerun()
         
         # Usage Metrics (show on chatbot page or if there are metrics)
@@ -364,6 +367,9 @@ form_page_html = """
 
 def show_form_page():
     # """Display the travel information form."""
+    
+    # Initialize form data from session state if available
+    form_data = st.session_state.get('form_data', {})
 
     with st.container(horizontal_alignment="center"):
         st.markdown(body=form_page_html, unsafe_allow_html=True)
@@ -375,40 +381,51 @@ def show_form_page():
             with col1:
                 destination = st.text_input(
                     "📍 Where do you want to go?",
+                    value=form_data.get('destination', ''),
                     placeholder="e.g., Paris, Tokyo, Himachal Pradesh",
                     help="Enter your desired destination city, country, or region"
                 )
                 
                 duration = st.number_input(
                         "📅 How long is your trip?",
-                        value=2,
+                        value=form_data.get('duration', 2),
                         step=1,
                         help="Select the number of days for your trip"
                     )
             
             with col2:
+                travel_type_options = [
+                    "Adventure & Outdoor Activities",
+                    "Cultural & Historical Sites", 
+                    "Relaxation & Wellness",
+                    "Food & Culinary Experiences",
+                    "Nightlife & Entertainment",
+                    "Family-Friendly Activities",
+                    "Photography & Sightseeing",
+                    "Shopping & Markets",
+                    "Nature & Wildlife",
+                    "Mixed Experience"
+                ]
+                travel_type_index = 9  # Default to Mixed Experience
+                if form_data.get('travel_type') in travel_type_options:
+                    travel_type_index = travel_type_options.index(form_data.get('travel_type'))
+                
                 travel_type = st.selectbox(
                     "🎯 What type of experience are you looking for?",
-                    options=[
-                        "Adventure & Outdoor Activities",
-                        "Cultural & Historical Sites", 
-                        "Relaxation & Wellness",
-                        "Food & Culinary Experiences",
-                        "Nightlife & Entertainment",
-                        "Family-Friendly Activities",
-                        "Photography & Sightseeing",
-                        "Shopping & Markets",
-                        "Nature & Wildlife",
-                        "Mixed Experience"
-                    ],
-                    index=9,  # Default to Mixed Experience
+                    options=travel_type_options,
+                    index=travel_type_index,
                     help="Choose the type of activities you're most interested in"
                 )
                 
+                budget_options = ["Low Budget (Budget-friendly options)", "Medium Budget (Comfortable spending)", "High Budget (Luxury experience)"]
+                budget_index = 1  # Default to Medium
+                if form_data.get('budget') in budget_options:
+                    budget_index = budget_options.index(form_data.get('budget'))
+                
                 budget = st.selectbox(
                     "💰 What's your budget range?",
-                    options=["Low Budget (Budget-friendly options)", "Medium Budget (Comfortable spending)", "High Budget (Luxury experience)"],
-                    index=1,  # Default to Medium
+                    options=budget_options,
+                    index=budget_index,
                     help="Select your preferred budget range for the trip"
                 )
             
@@ -420,18 +437,25 @@ def show_form_page():
                     "👥 Number of travelers",
                     min_value=1,
                     max_value=100,
-                    value=2,
+                    value=form_data.get('group_size', 2),
                     help="How many people will be traveling?"
                 )
+                
+                accommodation_options = ["Any", "Hotels", "Hostels", "Vacation Rentals", "Resorts", "Boutique Properties"]
+                accommodation_index = 0  # Default to Any
+                if form_data.get('accommodation') in accommodation_options:
+                    accommodation_index = accommodation_options.index(form_data.get('accommodation'))
             
                 accommodation = st.selectbox(
                     "🏨 Preferred accommodation",
-                    options=["Any", "Hotels", "Hostels", "Vacation Rentals", "Resorts", "Boutique Properties"],
+                    options=accommodation_options,
+                    index=accommodation_index,
                     help="What type of accommodation do you prefer?"
                 )
             
             special_requests = st.text_area(
                 "📝 Any special requests or interests?",
+                value=form_data.get('special_requests', ''),
                 placeholder="e.g., vegetarian food options, accessibility needs, specific attractions to visit...",
                 help="Tell us about any specific requirements or interests"
             )
@@ -446,21 +470,25 @@ def show_form_page():
 
                 submitted = st.form_submit_button("🎯 Generate My Trip Plan", type="primary", width="content")
 
+            # Always save form data to session state (for persistence)
+            current_form_data = {
+                "destination": destination,
+                "duration": duration,
+                "travel_type": travel_type,
+                "budget": budget,
+                "group_size": group_size,
+                "accommodation": accommodation,
+                "special_requests": special_requests
+            }
+            st.session_state.form_data = current_form_data
+            
             if submitted:
                 if not destination.strip():
                     st.error("Please enter a destination!")
                     return
                 
-                # Store form data
-                st.session_state.trip_data = {
-                    "destination": destination,
-                    "duration": duration,
-                    "travel_type": travel_type,
-                    "budget": budget,
-                    "group_size": group_size,
-                    "accommodation": accommodation,
-                    "special_requests": special_requests
-                }
+                # Store form data as trip data when submitted
+                st.session_state.trip_data = current_form_data.copy()
                 
                 # Initialize chat with trip data
                 initial_prompt = f"""I want to plan a {duration}-day trip to {destination} for {group_size} people. 
@@ -483,6 +511,10 @@ def show_form_page():
 
 def show_chatbot_page():
     """Display the chatbot interface with trip planning."""
+    # Ensure trip_planner_ai has access to current trip data
+    if st.session_state.trip_data and not trip_planner_ai.current_trip_data:
+        trip_planner_ai.current_trip_data = st.session_state.trip_data.copy()
+    
     # Handle initial prompt if it exists
     if hasattr(st.session_state, 'initial_prompt') and st.session_state.initial_prompt:
         initial_prompt = st.session_state.initial_prompt
@@ -515,6 +547,10 @@ def show_chatbot_page():
 
             with st.chat_message("assistant"):
                 with st.spinner("Planning your perfect trip..."):
+                    # Always ensure trip_planner_ai has access to current trip data
+                    if st.session_state.trip_data:
+                        trip_planner_ai.current_trip_data = st.session_state.trip_data.copy()
+                    
                     model_text = call_gemini(st.session_state.messages, user_input)
 
                 # Display the response (tool calls are handled internally)

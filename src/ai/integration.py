@@ -115,7 +115,19 @@ class TripPlannerAI:
                 ),
             )
             
-            return self._process_response_with_tools(response, user_message)
+            # Process the response and handle tool calls
+            result = self._process_response_with_tools(response, user_message)
+            
+            # Update the current itinerary data if the response contains new information
+            if result and result != user_message:
+                self.current_itinerary_data = {
+                    "user_prompt": user_message,
+                    "ai_response": result,
+                    "generated_at": datetime.now().isoformat(),
+                    "is_follow_up": True
+                }
+            
+            return result
             
         except Exception as e:
             logger.error(f"Error generating chat response: {e}")
