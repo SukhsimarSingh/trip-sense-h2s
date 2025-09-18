@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List
 
 import dotenv
@@ -21,8 +21,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL_NAME = os.getenv("GEMINI_MODEL")
 
 # =========================
 # Streamlit App Layout
@@ -108,7 +106,15 @@ def render_sidebar():
             trip_data = st.session_state.trip_data
             
             st.write(f"📍 **Destination:** {trip_data.get('destination', 'N/A')}")
-            st.write(f"📅 **Duration:** {trip_data.get('duration', 'N/A')} days")
+            
+            # Display date range if available, otherwise show duration
+            if trip_data.get('start_date') and trip_data.get('end_date'):
+                start_date_str = datetime.fromisoformat(trip_data['start_date']).strftime('%b %d')
+                end_date_str = datetime.fromisoformat(trip_data['end_date']).strftime('%b %d, %Y')
+                st.write(f"📅 **Dates:** {start_date_str} - {end_date_str}")
+            else:
+                st.write(f"📅 **Duration:** {trip_data.get('duration', 'N/A')} days")
+            
             st.write(f"🎨 **Type:** {trip_data.get('travel_type', 'N/A')}")
             st.write(f"💰 **Budget:** {trip_data.get('budget', 'N/A')}")
             
@@ -386,12 +392,49 @@ def show_form_page():
                     help="Enter your desired destination city, country, or region"
                 )
                 
-                duration = st.number_input(
-                        "📅 How long is your trip?",
-                        value=form_data.get('duration', 2),
-                        step=1,
-                        help="Select the number of days for your trip"
+                # duration = st.number_input(
+                #         "📅 How long is your trip?",
+                #         value=form_data.get('duration', 2),
+                #         step=1,
+                #         help="Select the number of days for your trip"
+                #     )
+
+                today = datetime.now()   
+                
+                # Set default dates from form_data if available
+                default_start = today
+                default_end = today + timedelta(days=2)
+                
+                if form_data.get('start_date') and form_data.get('end_date'):
+                    try:
+                        default_start = datetime.fromisoformat(form_data['start_date']).date()
+                        default_end = datetime.fromisoformat(form_data['end_date']).date()
+                    except:
+                        pass  # Use default dates if parsing fails
+
+                date_range = st.date_input(
+                    "📅 When are you going?",
+                    (default_start, default_end),
+                    format="DD.MM.YYYY",
+                    help="Select the dates for your trip"
                     )
+
+                # Extract start and end dates with validation
+                if len(date_range) == 2:
+                    start_date = date_range[0]
+                    end_date = date_range[1]
+                elif len(date_range) == 1:
+                    start_date = date_range[0]
+                    end_date = date_range[0] + timedelta(days=2)
+                else:
+                    start_date = today
+                    end_date = today + timedelta(days=2)
+                
+                # Ensure end_date is after start_date
+                if end_date <= start_date:
+                    end_date = start_date + timedelta(days=1)
+                
+                duration = (end_date - start_date).days
             
             with col2:
                 travel_type_options = [
@@ -474,6 +517,8 @@ def show_form_page():
             current_form_data = {
                 "destination": destination,
                 "duration": duration,
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat(),
                 "travel_type": travel_type,
                 "budget": budget,
                 "group_size": group_size,
@@ -529,11 +574,21 @@ def show_chatbot_page():
             st.session_state.messages.append({"role": "assistant", "content": model_text})
     
     # Header with trip info
+    trip_data = st.session_state.trip_data
+    
+    # Create trip description with dates if available
+    if trip_data.get('start_date') and trip_data.get('end_date'):
+        start_date_str = datetime.fromisoformat(trip_data['start_date']).strftime('%b %d')
+        end_date_str = datetime.fromisoformat(trip_data['end_date']).strftime('%b %d, %Y')
+        trip_description = f"Planning your trip to {trip_data.get('destination', 'your destination')} from {start_date_str} to {end_date_str}"
+    else:
+        trip_description = f"Planning your {trip_data.get('duration', 'N/A')}-day trip to {trip_data.get('destination', 'your destination')}"
+    
     st.markdown(f"""
         <div style="text-align: center; padding: 3rem 0;">
             <h1 style="color: #666;">🤖 Your AI Trip Assistant</h1>
             <br>
-            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Planning your {st.session_state.trip_data.get('duration', 'N/A')}-day trip to {st.session_state.trip_data.get('destination', 'your destination')}</p>
+            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">{trip_description}</p>
         </div>
     """, unsafe_allow_html=True)
     

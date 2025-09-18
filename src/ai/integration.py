@@ -5,8 +5,9 @@ This module provides the interface between app.py and the AI planning system.
 
 import os
 import logging
-from typing import Dict, Any, List, Optional
-from datetime import datetime
+from typing import Dict, Any, List, Optional, Tuple
+from datetime import datetime, date
+import calendar
 
 from .gemini_client import get_gemini_client
 from .tools import tools
@@ -20,6 +21,59 @@ logger = logging.getLogger(__name__)
 THINKING_BUDGET = 0
 TEMPERATURE= 0.7
 MAX_OUTPUT_TOKENS=2048
+
+def determine_season_and_months(start_date_str: str, end_date_str: str) -> Tuple[str, str]:
+    """
+    Determine the season and travel months from date range.
+    
+    Args:
+        start_date_str: ISO format date string (YYYY-MM-DD)
+        end_date_str: ISO format date string (YYYY-MM-DD)
+    
+    Returns:
+        tuple: (season, travel_months)
+    """
+    try:
+        start_date = datetime.fromisoformat(start_date_str).date()
+        end_date = datetime.fromisoformat(end_date_str).date()
+        
+        # Get months involved in the trip
+        months = []
+        current_date = start_date.replace(day=1)  # Start from first day of start month
+        end_month = end_date.replace(day=1)
+        
+        while current_date <= end_month:
+            months.append(current_date.month)
+            # Move to next month
+            if current_date.month == 12:
+                current_date = current_date.replace(year=current_date.year + 1, month=1)
+            else:
+                current_date = current_date.replace(month=current_date.month + 1)
+        
+        # Convert months to names
+        month_names = [calendar.month_name[month] for month in months]
+        travel_months = ", ".join(month_names)
+        
+        # Determine season based on primary month (start month)
+        start_month = start_date.month
+        
+        # Northern hemisphere seasons (most common)
+        if start_month in [12, 1, 2]:
+            season = "Winter"
+        elif start_month in [3, 4, 5]:
+            season = "Spring"
+        elif start_month in [6, 7, 8]:
+            season = "Summer"
+        elif start_month in [9, 10, 11]:
+            season = "Fall/Autumn"
+        else:
+            season = "Unknown"
+        
+        return season, travel_months
+        
+    except Exception as e:
+        logger.error(f"Error determining season and months: {e}")
+        return "Unknown", "Unknown"
 
 class TripPlannerAI:
     """Main interface for AI trip planning functionality."""
@@ -62,8 +116,18 @@ class TripPlannerAI:
             return demo_response
         
         try:
-            # Render the user prompt with trip data
-            user_prompt = render_user_prompt("initial_prompt.txt", trip_data)
+            # Enhance trip data with season and month information if dates are available
+            enhanced_trip_data = trip_data.copy()
+            if trip_data.get('start_date') and trip_data.get('end_date'):
+                season, travel_months = determine_season_and_months(
+                    trip_data['start_date'], 
+                    trip_data['end_date']
+                )
+                enhanced_trip_data['season'] = season
+                enhanced_trip_data['travel_months'] = travel_months
+            
+            # Render the user prompt with enhanced trip data
+            user_prompt = render_user_prompt("initial_prompt.txt", enhanced_trip_data)
             
             # Generate content with tools
             response = self.client.models.generate_content(
@@ -145,6 +209,9 @@ class TripPlannerAI:
                     # Look for function calls
                     function_calls = [part.function_call for part in parts if hasattr(part, 'function_call') and part.function_call]
                     
+                    # Also check for text parts that might contain code-like responses
+                    text_parts = [part.text for part in parts if hasattr(part, 'text') and part.text]
+                    
                     if function_calls:
                         # Execute tool calls
                         tool_results = []
@@ -180,6 +247,8 @@ class TripPlannerAI:
                                         user_friendly_error = "Location search is currently unavailable. I can still help you plan your trip with general recommendations!"
                                     elif "GOOGLE_MAPS_API_KEY not set" in error_msg:
                                         user_friendly_error = "Location services are not configured. I'll provide general travel recommendations instead."
+                                    elif "weather api" in error_msg.lower():
+                                        user_friendly_error = "Weather information is currently unavailable, but I can still help plan your trip with general seasonal recommendations."
                                     else:
                                         user_friendly_error = f"I encountered an issue with {tool_name.replace('_', ' ')}, but I can still help you plan your trip!"
                                     
@@ -216,9 +285,26 @@ class TripPlannerAI:
                                 logger.error(f"Error in final response generation: {e}")
                                 # Fallback to a summary of tool results
                                 return self._create_tool_summary(tool_results)
+                    
+                    # Check if response contains code-like patterns that suggest tool confusion
+                    elif text_parts:
+                        combined_text = "".join(text_parts)
+                        if any(pattern in combined_text.lower() for pattern in ["print(", "google_search", "search(", ".search("]):
+                            # AI is trying to generate code instead of using tools - provide a helpful response
+                            return "I'd be happy to help you plan your trip! Let me provide you with some recommendations based on your preferences. What specific information would you like me to help you with - attractions, restaurants, weather, or something else?"
             
             # Return the original response text if no tool calls
-            response_text = response.text or ""
+            response_text = ""
+            try:
+                response_text = response.text or ""
+            except AttributeError:
+                # Try alternative ways to get response text
+                if hasattr(response, 'candidates') and response.candidates:
+                    candidate = response.candidates[0]
+                    if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
+                        text_parts = [part.text for part in candidate.content.parts if hasattr(part, 'text') and part.text]
+                        response_text = "".join(text_parts)
+            
             if response_text:
                 return response_text
             else:
@@ -229,7 +315,8 @@ class TripPlannerAI:
             logger.error(f"Error processing response with tools: {e}")
             # Try to get basic response text
             try:
-                return response.text or self._generate_conversational_fallback(original_prompt)
+                response_text = response.text if hasattr(response, 'text') else ""
+                return response_text or self._generate_conversational_fallback(original_prompt)
             except:
                 return "I'm here to help you plan your trip! Could you please rephrase your request?"
     
@@ -243,6 +330,10 @@ class TripPlannerAI:
         for message in recent_messages:
             role = message.get("role", "")
             content = message.get("content", "")
+            
+            # Skip system messages in conversation context
+            if role == "system":
+                continue
             
             if isinstance(content, dict):
                 # Handle tool responses
@@ -266,26 +357,36 @@ class TripPlannerAI:
         travel_type = trip_data.get("travel_type", "Mixed Experience")
         budget = trip_data.get("budget", "Medium Budget")
         
+        # Add season information if available
+        season_info = ""
+        if trip_data.get('start_date') and trip_data.get('end_date'):
+            season, travel_months = determine_season_and_months(
+                trip_data['start_date'], 
+                trip_data['end_date']
+            )
+            season_info = f"\n**Travel Season**: {season} ({travel_months})"
+        
         return f"""*Note: This is a demo response. Configure your Gemini API key for personalized AI-powered recommendations.*
-# {duration}-Day Trip to {destination}
+            # {duration}-Day Trip to {destination}
+            {season_info}
 
-## Day 1: Arrival & Exploration
-- **Morning**: Arrive and check into accommodation
-- **Afternoon**: Explore the city center and main attractions
-- **Evening**: Try local cuisine at a recommended restaurant
+            ## Day 1: Arrival & Exploration
+            - **Morning**: Arrive and check into accommodation
+            - **Afternoon**: Explore the city center and main attractions
+            - **Evening**: Try local cuisine at a recommended restaurant
 
-## Day 2: {travel_type.split('&')[0].strip()} Focus
-- **Morning**: Visit top-rated attractions based on your {travel_type.lower()} preference
-- **Afternoon**: Continue exploring with {budget.lower()} options
-- **Evening**: Relax and enjoy local entertainment
+            ## Day 2: {travel_type.split('&')[0].strip()} Focus
+            - **Morning**: Visit top-rated attractions based on your {travel_type.lower()} preference
+            - **Afternoon**: Continue exploring with {budget.lower()} options
+            - **Evening**: Relax and enjoy local entertainment
 
-*For a fully personalized itinerary with real-time recommendations, weather updates, and booking links, please configure your Gemini API key.*
+            *For a fully personalized itinerary with real-time recommendations, weather updates, and booking links, please configure your Gemini API key.*
 
-**Budget Estimate**: Varies based on your {budget.lower()} preference
-**Best Time to Visit**: Check local weather and seasonal recommendations
-**Transportation**: Local transport options available
+            **Budget Estimate**: Varies based on your {budget.lower()} preference
+            **Best Time to Visit**: Check local weather and seasonal recommendations
+            **Transportation**: Local transport options available
 
-Would you like me to help you refine any part of this itinerary?"""
+            Would you like me to help you refine any part of this itinerary?"""
     
     def _generate_demo_chat_response(self, user_message: str) -> str:
         """Generate demo chat response when AI is not available."""
