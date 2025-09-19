@@ -1,58 +1,51 @@
 # 🧭 AI Trip Planner
 
-An intelligent trip planning application powered by Google Gemini AI and Google Maps Platform APIs. Create personalized travel itineraries with real-time location data, weather forecasts, and smart recommendations.
-
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
-![Streamlit](https://img.shields.io/badge/streamlit-1.49+-red.svg)
+An intelligent travel planning application powered by Google's Gemini AI that creates personalized itineraries using real-time data from Google Maps, Places, and Weather APIs. Built with Streamlit for a modern, interactive web interface.
 
 ## ✨ Features
 
 ### 🤖 AI-Powered Planning
-- **Smart Itineraries**: Generate detailed day-by-day travel plans using Google Gemini AI
-- **Conversational Interface**: Chat with the AI to refine and customize your trip
-- **Contextual Recommendations**: Get suggestions based on your preferences, budget, and travel style
+- **Smart Itinerary Generation**: Creates detailed day-by-day travel plans
+- **Real-time Data Integration**: Uses Google Places, Maps, and Weather APIs
+- **Personalized Recommendations**: Tailored to your travel style and preferences
+- **Interactive Chat Interface**: Refine and customize your itinerary through conversation
 
-### 🗺️ Location Intelligence
-- **Place Search**: Find destinations, landmarks, and points of interest
-- **Nearby Attractions**: Discover tourist attractions, museums, parks, and cultural sites
-- **Restaurant Finder**: Locate restaurants with dietary preference support
-- **Hotel Search**: Find accommodations filtered by type and rating
-- **Weather Integration**: Get weather forecasts for your travel dates
+### 🎯 Travel Personalization
+- **Travel Styles**: Adventure, Culture, Relaxation, Food, Nightlife, Family, Photography, Shopping, Nature, Mixed
+- **Budget Levels**: Low, Medium, High with appropriate recommendations
+- **Special Requests**: Vegetarian options, accessibility features, specific attractions
+- **Group Planning**: Solo, couple, family, or group travel optimization
 
-### 💾 Trip Management
-- **Save Itineraries**: Store your favorite trip plans with custom names and descriptions
-- **Trip Library**: Browse and manage all your saved trips
-- **Detailed Views**: Access complete trip information including form data and AI responses
-
-### 🎨 User Experience
-- **Modern UI**: Clean, responsive Streamlit interface
-- **Demo Mode**: Try the app without API keys using sample responses
-- **Error Handling**: Graceful fallbacks when services are unavailable
-- **Real-time Status**: Live API availability indicators
+### 🛠️ Smart Features
+- **Function Calling**: Automatic integration with Google APIs for real-time data
+- **Trip Storage**: Save and manage multiple trip plans
+- **Markdown Rendering**: Beautiful, formatted itinerary display
+- **Session Management**: Efficient state handling and caching
+- **Error Handling**: Robust error recovery and user feedback
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8 or higher
-- Google Cloud Platform account (for API keys)
+- Python 3.8+
+- Google Cloud Platform account
+- API keys for Google Maps Platform and Gemini AI
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd tip-planner-fixed
+   cd ai-trip-planner-h2s
    ```
 
 2. **Create virtual environment**
    ```bash
    python -m venv venv
    
-   # Windows
+   # On Windows:
    venv\Scripts\activate
    
-   # macOS/Linux
+   # On macOS/Linux:
    source venv/bin/activate
    ```
 
@@ -61,214 +54,348 @@ An intelligent trip planning application powered by Google Gemini AI and Google 
    pip install -r requirements.txt
    ```
 
-4. **Configure environment variables**
-   
-   Create a `.env` file in the project root:
+4. **Set up environment variables**
+   Create a `.env` file in the root directory:
    ```env
-   # Required for AI functionality
    GEMINI_API_KEY=your_gemini_api_key_here
-   
-   # Required for location services
    GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
-   
-   # Optional: Specify Gemini model (defaults to gemini-1.5-pro)
-   GEMINI_MODEL=models/gemini-1.5-pro
+   GEMINI_MODEL=gemini-2.0-flash
    ```
 
-5. **Run the application**
+5. **Enable Google APIs**
+   In your Google Cloud Console, enable:
+   - Places API (New)
+   - Weather API
+   - Maps JavaScript API
+
+6. **Run the application**
    ```bash
    streamlit run app.py
    ```
 
-6. **Open your browser**
-   
-   Navigate to `http://localhost:8501`
+## 🏗️ Architecture
 
-## 🔑 API Setup
-
-### Google Gemini API
-1. Visit [Google AI Studio](https://aistudio.google.com/)
-2. Create an API key
-3. Add it to your `.env` file as `GEMINI_API_KEY`
-
-### Google Maps Platform APIs
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select existing one
-3. Enable the following APIs:
-   - **Places API (New)** - For location search and nearby places
-   - **Weather API** - For weather forecasts
-4. Create credentials (API Key)
-5. Add it to your `.env` file as `GOOGLE_MAPS_API_KEY`
-
-### API Costs
-- **Gemini API**: Generous free tier, pay-per-use pricing
-- **Google Maps APIs**: Free tier available, usage-based pricing
-- **Demo Mode**: Use the app without API keys for testing
-
-## 📁 Project Structure
-
+### Project Structure
 ```
-tip-planner-fixed/
-├── app.py                      # Main Streamlit application
-├── requirements.txt            # Python dependencies
-├── README.md                   # Project documentation
-├── LICENSE                     # MIT license
-├── .env                        # Environment variables (create this)
-├── prompts/                    # AI prompt templates
-│   ├── system.yaml            # System instructions for AI
+ai-trip-planner-h2s/
+├── app.py                 # Main landing page
+├── pages/                 # Streamlit pages
+│   ├── form.py           # Trip planning form
+│   ├── chatbot.py        # AI chat interface
+│   └── trips.py          # Saved trips management
+├── services/             # Core business logic
+│   ├── gemini.py         # AI integration
+│   ├── tools.py          # Google API functions
+│   ├── trip_storage.py   # Trip persistence
+│   ├── export.py         # Trip export functionality
+│   ├── logging.py        # Logging and metrics
+│   └── prompt_loader.py  # Template management
+├── prompts/              # AI prompts and templates
+│   ├── system.yaml       # System instructions
 │   └── user/
-│       └── initial_prompt.txt # User prompt template
-├── src/ai/                     # AI integration modules
-│   ├── integration.py         # Main AI interface
-│   ├── handlers.py            # Tool implementations
-│   ├── tools.py               # Tool definitions for Gemini
-│   ├── router.py              # Tool routing logic
-│   ├── gemini_client.py       # Gemini API client
-│   ├── prompt_loader.py       # Prompt loading utilities
-│   └── trip_storage.py        # Trip persistence
-└── saved_trips/               # Stored trip data (auto-created)
+│       └── initial_prompt.jinja
+├── styles/               # UI styling
+│   └── styles.py
+├── saved_trips/          # Trip storage (JSON files)
+├── requirements.txt      # Python dependencies
+├── trip_planner.log      # Application logs
+└── venv/                 # Virtual environment
 ```
 
-## 🛠️ Usage
+### Key Components
 
-### Planning a Trip
+#### 🧠 AI Engine (`services/gemini.py`)
+- **TripSenseAI Class**: Main AI orchestration
+- **Function Calling**: Automatic tool execution
+- **Response Processing**: Handles multi-part responses
+- **Context Management**: Optimized conversation handling
+- **Caching**: Efficient client initialization
 
-1. **Fill out the trip form**:
-   - Destination (e.g., "Paris", "Tokyo", "New York")
-   - Duration (1-30 days)
-   - Travel type (Adventure, Cultural, Relaxation, Business, Family)
-   - Budget level (Budget, Medium, Luxury)
-   - Group size
-   - Accommodation preference
-   - Special requests
+#### 🛠️ Tool Integration (`services/tools.py`)
+- **search_text**: Location resolution and coordinates
+- **get_nearby_attractions**: Tourist attractions and sights
+- **get_nearby_restaurants**: Dining recommendations
+- **get_hotels**: Accommodation options
+- **get_weather**: Weather forecasts
+- **save_trip**: Trip persistence
 
-2. **Generate itinerary**: Click "Plan My Trip" to get AI-generated recommendations
+#### 💾 Data Management (`services/trip_storage.py`)
+- **Trip Persistence**: JSON-based storage
+- **CRUD Operations**: Create, read, update, delete trips
+- **Data Validation**: Ensures data integrity
+- **File Management**: Organized trip storage
 
-3. **Chat with AI**: Ask follow-up questions to refine your trip:
-   - "What are good vegetarian restaurants?"
-   - "Add more outdoor activities"
-   - "Find family-friendly attractions"
+#### 📤 Export Services (`services/export.py`)
+- **PDF Generation**: Export trips to PDF format
+- **Data Formatting**: Clean, readable trip exports
+- **File Management**: Organized export handling
 
-4. **Save your trip**: Use the "Save Itinerary" button to store your plan
+## 🛠️ Technology Stack
 
-### Managing Saved Trips
+### Core Technologies
+- **Python 3.8+**: Main programming language
+- **Streamlit 1.49+**: Web application framework
+- **Google Gemini AI**: Advanced language model with function calling
+- **Google Maps Platform**: Location services and weather data
+- **Jinja2**: Template engine for dynamic prompts
+- **PyYAML**: Configuration file management
 
-- **View all trips**: Navigate to "Saved Trips" in the sidebar
-- **Trip details**: Click "View Details" to see complete information
-- **Delete trips**: Remove trips you no longer need
+### Key Dependencies
+- **google-genai**: Google Gemini AI integration
+- **streamlit**: Web app framework
+- **python-dotenv**: Environment variable management
+- **jinja2**: Template rendering
+- **pyyaml**: YAML configuration parsing
+- **reportlab**: PDF generation for exports
+- **requests**: HTTP client for API calls
 
 ## 🔧 Configuration
 
 ### Environment Variables
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `GEMINI_API_KEY` | Google Gemini AI API key | Yes |
+| `GOOGLE_MAPS_API_KEY` | Google Maps Platform API key | Yes |
+| `GEMINI_MODEL` | Gemini model to use (default: gemini-2.0-flash) | No |
 
-| Variable | Required | Description | Default |
-|----------|----------|-------------|---------|
-| `GEMINI_API_KEY` | Yes* | Google Gemini API key | None |
-| `GOOGLE_MAPS_API_KEY` | Yes* | Google Maps Platform API key | None |
-| `GEMINI_MODEL` | No | Gemini model to use | `models/gemini-1.5-pro` |
+### Model Configuration
+The application is configured to use:
+- **Model**: `gemini-2.0-flash` (configurable via environment variable)
+- **Temperature**: 0.7 for balanced creativity and accuracy
+- **Max Output Tokens**: 2048 for comprehensive responses
+- **Safety Settings**: Configured to block harmful content
+- **Function Calling**: Enabled for real-time data integration
 
-*Required for full functionality. Demo mode available without keys.
+### API Requirements
+- **Google Maps Platform APIs**:
+  - Places API (New)
+  - Weather API
+  - Maps JavaScript API (optional, for enhanced features)
 
-### Customizing AI Behavior
+## 🔄 Application Workflow
 
-Edit `prompts/system.yaml` to modify:
-- AI personality and tone
-- Response format preferences
-- Tool usage policies
-- Output guidelines
-
-### Adding Custom Tools
-
-1. Define tool function in `src/ai/handlers.py`
-2. Add tool declaration dictionary
-3. Register in `src/ai/router.py`
-4. Add to tool list in `src/ai/tools.py`
-
-## 🏗️ Architecture
-
-### Core Components
-
-- **Streamlit App** (`app.py`): User interface and main application logic
-- **AI Integration** (`src/ai/integration.py`): Orchestrates AI interactions and tool usage
-- **Tool System**: Modular functions for location search, weather, and trip management
-- **Prompt System**: Template-based prompt generation for consistent AI behavior
-
-### AI Workflow
-
-1. **User Input**: Trip preferences collected via Streamlit form
-2. **Prompt Generation**: User data rendered into structured prompts
-3. **AI Processing**: Gemini AI generates response with potential tool calls
-4. **Tool Execution**: Location searches, weather lookups performed as needed
-5. **Response Synthesis**: AI creates final conversational response
-6. **User Interaction**: Chat interface for follow-up questions
+### User Journey
+1. **Landing Page**: Welcome screen with feature overview
+2. **Trip Planning Form**: Input destination, dates, preferences, and budget
+3. **AI Processing**: Gemini AI generates personalized itinerary using real-time data
+4. **Interactive Chat**: Refine and customize the itinerary through conversation
+5. **Trip Management**: Save, view, export, and manage multiple trips
 
 ### Data Flow
+1. **User Input**: Form data collected and validated
+2. **Prompt Generation**: Dynamic prompts created using Jinja2 templates
+3. **AI Processing**: Gemini AI processes request with function calling
+4. **API Integration**: Real-time data fetched from Google APIs
+5. **Response Rendering**: Markdown-formatted itinerary displayed
+6. **Storage**: Trip data saved locally in JSON format
 
-```
-User Input → Prompt Template → Gemini AI → Tool Calls → External APIs → AI Response → User Interface
-```
+## 📊 Features Deep Dive
 
-## 🧪 Testing
+### AI Function Calling
+The application uses Google's Gemini AI with function calling to automatically:
+1. **Resolve locations** to coordinates
+2. **Fetch weather data** for travel dates
+3. **Find attractions** based on travel preferences
+4. **Recommend restaurants** with dietary considerations
+5. **Suggest accommodations** within budget
+6. **Save trips** when requested
 
-### Demo Mode
-Run without API keys to test the interface:
+### Smart Context Management
+- **Limited History**: Uses only last 3 messages for efficiency
+- **Token Optimization**: Excludes system prompts from token counting
+- **Session Persistence**: Maintains trip data across page navigation
+- **Itinerary Tracking**: Separates main itinerary from chat responses
+
+### Error Handling
+- **API Failures**: Graceful degradation with informative messages
+- **Rate Limiting**: Automatic retry mechanisms
+- **Data Validation**: Input sanitization and validation
+- **User Feedback**: Clear error messages and recovery suggestions
+
+### Performance Optimization
+- **Client Caching**: Gemini client cached using Streamlit's `@st.cache_resource`
+- **Session Management**: Efficient state handling across page navigation
+- **Token Management**: Optimized context window usage
+- **Lazy Loading**: Resources loaded only when needed
+- **Response Streaming**: Real-time response display for better UX
+
+## 🎨 User Interface
+
+### Landing Page
+- **Modern Design**: Clean, responsive interface
+- **Feature Highlights**: Key capabilities showcase
+- **Quick Start**: One-click trip planning initiation
+
+### Trip Planning Form
+- **Comprehensive Inputs**: Destination, dates, preferences, budget
+- **Smart Validation**: Real-time input validation
+- **Template Generation**: Creates structured prompts for AI
+
+### Chat Interface
+- **Real-time Interaction**: Instant AI responses
+- **Markdown Rendering**: Beautiful itinerary formatting
+- **Function Transparency**: Shows when APIs are being called
+- **Save Integration**: Easy trip saving from chat
+
+### Trip Management
+- **Trip Library**: View all saved trips
+- **Trip Details**: Expandable trip information
+- **Export Options**: PDF export and sharing capabilities
+- **Trip Deletion**: Remove unwanted trips from storage
+
+## 🔍 Monitoring & Logging
+
+### Comprehensive Logging
+- **Request Tracking**: All API calls logged with timing
+- **Function Execution**: Detailed function call monitoring
+- **Error Tracking**: Complete error context and stack traces
+- **Performance Metrics**: Token usage and response times
+
+### Metrics Dashboard
+- **Token Usage**: Input/output token tracking
+- **Cost Estimation**: Real-time cost calculations
+- **Success Rates**: API call success monitoring
+- **Performance Analytics**: Response time analysis
+
+## 📁 File Organization
+
+### Saved Trips
+- **Location**: `saved_trips/` directory
+- **Format**: JSON files with unique identifiers
+- **Naming**: `default_{unique_id}.json`
+- **Content**: Complete trip data including itinerary, preferences, and metadata
+
+### Logs
+- **Application Log**: `trip_planner.log` in root directory
+- **Content**: API calls, errors, performance metrics, and debug information
+- **Rotation**: Automatic log rotation to prevent large files
+
+### Configuration Files
+- **System Prompts**: `prompts/system.yaml`
+- **User Templates**: `prompts/user/initial_prompt.jinja`
+- **Environment**: `.env` file (create manually)
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+#### API Key Issues
 ```bash
-# Remove or comment out API keys in .env
-streamlit run app.py
+Error: GOOGLE_MAPS_API_KEY not set
+```
+**Solution**: Ensure `.env` file contains valid API keys
+
+#### Places API Disabled
+```bash
+Google Places API is not enabled
+```
+**Solution**: Enable Places API (New) in Google Cloud Console
+
+#### Weather API Errors
+```bash
+Weather API error: 404 Not Found
+```
+**Solution**: Ensure Weather API is enabled and API key has proper permissions
+
+#### Function Call Failures
+```bash
+Function get_weather timed out
+```
+**Solution**: Check network connectivity and API quotas
+
+### Debug Mode
+Enable debug logging by setting log level in `services/logging.py`:
+```python
+logger.setLevel(logging.DEBUG)
 ```
 
-### Tool Testing
-Test individual components:
-```python
-from src.ai.handlers import search_text
-result = search_text({'query': 'Paris', 'max_results': 3})
-```
+## 🔒 Security Considerations
+
+### API Key Security
+- **Environment Variables**: Never commit API keys to version control
+- **Key Restrictions**: Restrict API keys to specific APIs and domains
+- **Regular Rotation**: Rotate API keys periodically
+
+### Data Privacy
+- **Local Storage**: Trip data stored locally in JSON files
+- **No External Transmission**: User data not sent to third parties
+- **Session Management**: Secure session state handling
+
+### Input Validation
+- **Sanitization**: All user inputs sanitized
+- **Type Checking**: Strict type validation
+- **Error Boundaries**: Contained error handling
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
 ### Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
+### Code Style
+- **Python**: Follow PEP 8 guidelines
+- **Documentation**: Comprehensive docstrings
+- **Type Hints**: Use type annotations
+- **Error Handling**: Explicit exception handling
+
+### Testing
 ```bash
-# Install development dependencies
-pip install -r requirements.txt
+# Run tests (when available)
+pytest tests/
 
-# Run with debug logging
-export STREAMLIT_LOGGER_LEVEL=debug
-streamlit run app.py
+# Type checking
+mypy services/
+
+# Linting
+flake8 .
 ```
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini AI** for intelligent trip planning capabilities
-- **Google Maps Platform** for location and weather data
-- **Streamlit** for the beautiful web interface
-- **Python Community** for excellent libraries and tools
+- **Google Gemini AI**: For powerful language model capabilities
+- **Google Maps Platform**: For comprehensive location and weather data
+- **Streamlit**: For the excellent web app framework
+- **Contributors**: Thanks to all contributors who helped improve this project
+
+## 🚀 Getting Started Checklist
+
+Before running the application, ensure you have:
+- [ ] Python 3.8+ installed
+- [ ] Google Cloud Platform account set up
+- [ ] Gemini API key obtained
+- [ ] Google Maps API key with required APIs enabled
+- [ ] Virtual environment created and activated
+- [ ] Dependencies installed from requirements.txt
+- [ ] `.env` file created with API keys
+- [ ] Required Google APIs enabled in Cloud Console
 
 ## 📞 Support
 
-- **Issues**: Report bugs and request features via GitHub Issues
+For support and questions:
+- **Issues**: Create an issue on GitHub for bugs or feature requests
 - **Documentation**: Check this README and inline code comments
-- **API Documentation**: 
-  - [Google Gemini API](https://ai.google.dev/docs)
-  - [Google Maps Platform](https://developers.google.com/maps/documentation)
+- **Logs**: Check `trip_planner.log` for detailed error information
+- **Community**: Join our discussions for general questions
 
-## 🗺️ Roadmap
+## 🔮 Future Enhancements
 
-- [ ] Multi-language support
-- [ ] Calendar integration
-- [ ] Expense tracking
-- [ ] Offline mode capabilities
+Planned features and improvements:
+- **Multi-language Support**: Itineraries in multiple languages
+- **Advanced Filters**: More granular preference controls
+- **Social Features**: Share and collaborate on trip plans
+- **Mobile Optimization**: Enhanced mobile experience
+- **Offline Mode**: Basic functionality without internet
+- **Integration APIs**: Connect with booking platforms
 
 ---
 
-**Built with ❤️ for travelers by travelers**
+**Built with ❤️ using Google Gemini AI and Streamlit**
+
+*Last updated: September 2025*
