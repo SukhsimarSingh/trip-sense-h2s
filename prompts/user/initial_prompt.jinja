@@ -1,16 +1,15 @@
 Plan a trip with the following preferences:
-
 Destination: {{ destination }}
 Duration: {{ duration }} days
-{% if start_date and end_date %}Travel dates: {{ start_date }} to {{ end_date }}
+{% if start_date and end_date %}Travel dates: {{ start_date }} to {{ end_date }}{% endif %}
 Season: {{ season }}
-Travel month(s): {{ travel_months }}{% endif %}
+Travel month(s): {{ travel_months }}
 Group size: {{ group_size }}
 Travel style: {{ travel_type }}
 Budget: {{ budget }}
 Accommodation preference: {{ accommodation }}
-{% if special_requests %}Special requests: {{ special_requests }}{% endif %}
-
+{% if special_requests %}Special requests: {{ special_requests }}{% else %}No special requests{% endif %}
+Special requests: {{ special_requests }}
 Please create a detailed, conversational itinerary with:
 1) A day-by-day plan with specific recommendations
 2) Practical tips and travel advice considering the season and time of year
