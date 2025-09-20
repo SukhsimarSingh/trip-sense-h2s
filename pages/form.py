@@ -1,10 +1,7 @@
 import streamlit as st
 from datetime import datetime, timedelta
 from styles.styles import (
-    FORM_PAGE_HTML,
-    BASIC_INFO_HEADER,
-    ADDITIONAL_PREFERENCES_HEADER,
-    MATERIAL_ICONS_CSS
+    FORM_PAGE_HTML
 )
 from services.prompt_loader import render_user_prompt
 
@@ -40,9 +37,6 @@ def get_travel_months(start_date: datetime, end_date: datetime) -> list[str]:
 if "form_data" not in st.session_state:
     st.session_state.form_data = {}
 
-# Load Material Icons CSS
-st.markdown(MATERIAL_ICONS_CSS, unsafe_allow_html=True)
-
 # Display session state for debugging
 # st.write(st.session_state)
 
@@ -56,7 +50,7 @@ with st.container(horizontal_alignment="center"):
         col1, col2, col3 = st.columns([1, 2, 1])
         
         with col2:
-            st.markdown(BASIC_INFO_HEADER, unsafe_allow_html=True)
+            st.markdown("<h5> Basic Info</h5>", unsafe_allow_html=True)
             # Origin
             origin = st.text_input(
                 "🛫 From where?",
@@ -167,7 +161,7 @@ with st.container(horizontal_alignment="center"):
 
             st.markdown("---", unsafe_allow_html=True)
 
-            st.markdown(ADDITIONAL_PREFERENCES_HEADER, unsafe_allow_html=True)
+            st.markdown("<h5>Additional Preferences (Optional)</h5>", unsafe_allow_html=True)
 
             accommodation_options = ["Any", "Hotels", "Hostels", "Vacation Rentals", "Resorts", "Boutique Properties"]
             accommodation_index = 0  # Default to Any
@@ -197,6 +191,7 @@ with st.container(horizontal_alignment="center"):
 
             # Always save form data to session state (for persistence)
             current_form_data = {
+                "origin": origin,
                 "destination": destination,
                 "duration": duration,
                 "start_date": start_date.isoformat(),
@@ -222,7 +217,9 @@ with st.container(horizontal_alignment="center"):
                 submitted = st.form_submit_button("Generate My Trip Plan", type="primary", width="content")
                 
                 if submitted:
-                    if not destination.strip():
+                    if not origin.strip():
+                        st.error("Please enter your origin location!")
+                    elif not destination.strip():
                         st.error("Please enter a destination!")
                     else:
                         # Store the trip data when submitted
@@ -230,6 +227,7 @@ with st.container(horizontal_alignment="center"):
                                             
                         # Prepare template context
                         context = {
+                            'origin': origin,
                             'destination': destination,
                             'duration': duration,
                             'start_date': start_date.strftime("%B %d, %Y"),

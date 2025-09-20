@@ -6,7 +6,7 @@ from services.gemini import TripSenseAI
 from services.prompt_loader import load_system_prompt
 from services.logging import logger, initialize_metrics
 from services.trip_storage import trip_storage
-from styles.styles import CHATBOT_HEADER, MATERIAL_ICONS_CSS
+from styles.styles import CHATBOT_HEADER
 
 SYSTEM_INSTRUCTION = load_system_prompt()
 
@@ -107,8 +107,6 @@ def render_chat():
 
 # Uncomment below line for debugging session state
 # st.write(st.session_state)
-
-st.markdown(MATERIAL_ICONS_CSS, unsafe_allow_html=True)
 st.markdown(CHATBOT_HEADER, unsafe_allow_html=True)
 
 # Safety check: If no trip data, redirect to form
@@ -132,11 +130,17 @@ initial_prompt = st.session_state.initial_prompt
 if st.session_state.trip_data:
     start_date_str = datetime.fromisoformat(trip_data['start_date']).strftime('%b %d')
     end_date_str = datetime.fromisoformat(trip_data['end_date']).strftime('%b %d, %Y')
-    trip_description = f"Planning your trip to {trip_data.get('destination', 'your destination')} from {start_date_str} to {end_date_str}"
+    origin = trip_data.get('origin', '')
+    destination = trip_data.get('destination', 'your destination')
+
+    trip_description = f"Planning your trip from {origin} to {destination} from {start_date_str} to {end_date_str}"
+    
 else:
     trip_description = f"Please fill the form to get the itinerary!"
 
-st.markdown(f"""<p style="margin: 0.5rem 0 0 0; opacity: 0.9;">{trip_description}</p>""", unsafe_allow_html=True)
+st.markdown(f"""<p style="text-align: center; margin: 0.5rem 0 0 0; opacity: 0.9;">{trip_description}</p>""", unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 with st.container(border=True):
     # Process initial prompt only once

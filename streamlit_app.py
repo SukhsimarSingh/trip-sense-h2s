@@ -1,10 +1,4 @@
 import streamlit as st
-from styles.styles import (
-    LANDING_PAGE_HTML, 
-    PERSONALISED_WIDGET, 
-    PLANNING_WIDGET, 
-    INTERACTIVE_WIDGET
-)
 # Display session state for debugging
 # st.write(st.session_state)
 
@@ -20,5 +14,5 @@ pg = st.navigation([
     form,
     chatbot,
     trips
-])
+], position = "top")
 pg.run()

@@ -4,7 +4,7 @@ from services.logging import logger
 from datetime import datetime
 import re
 from services.export import generate_trip_pdf
-from styles.styles import MATERIAL_ICONS_CSS, TRIPS_HEADER
+from styles.styles import TRIPS_HEADER
 
 @st.dialog(title="Trip Details", width="large")
 def show_trip_modal(trip_id):
@@ -25,9 +25,11 @@ def show_trip_modal(trip_id):
     
     # Trip header with name and destination
     trip_name = trip_data.get('trip_name', 'Untitled Trip')
+    origin = form_data.get('origin', 'Unknown Origin')
     destination = form_data.get('destination', 'Unknown Destination')
     st.markdown(f"### 🗺️ {trip_name}")
-    st.markdown(f"**📍 {destination}**")
+    st.markdown(f"**🛫 From:** {origin}")
+    st.markdown(f"**📍 To:** {destination}")
     
     # Create tabs for better organization
     tab1, tab2 = st.tabs(["📋 Overview", "🗓️ Itinerary"])
@@ -210,7 +212,6 @@ if st.session_state.get('trip_just_saved'):
     del st.session_state.trip_just_saved
 
 # Header with trip info
-st.markdown(MATERIAL_ICONS_CSS, unsafe_allow_html=True)
 st.markdown(TRIPS_HEADER, unsafe_allow_html=True)
 
 # Import trip storage
@@ -237,7 +238,8 @@ try:
                 with col1:
                     trip_name = trip.get('trip_name', 'Untitled Trip')
                     st.subheader(f"{trip_name}")
-                    st.write(f"**📍 Destination:** {trip.get('destination', 'Unknown')}")
+                    st.write(f"**🛫 From:** {trip.get('origin', 'Unknown')}")
+                    st.write(f"**📍 To:** {trip.get('destination', 'Unknown')}")
                     st.write(f"**📅 Duration:** {trip.get('start_date', 'N/A')} to {trip.get('end_date', 'N/A')}")
                     st.write(f"**🎯 Type:** {trip.get('travel_type', 'N/A')}")
                     if trip.get('trip_summary'):
