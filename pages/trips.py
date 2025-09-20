@@ -4,6 +4,7 @@ from services.logging import logger
 from datetime import datetime
 import re
 from services.export import generate_trip_pdf
+from styles.styles import MATERIAL_ICONS_CSS, TRIPS_HEADER
 
 @st.dialog(title="Trip Details", width="large")
 def show_trip_modal(trip_id):
@@ -168,15 +169,19 @@ def show_trip_modal(trip_id):
 # Initialize session state for trips page
 def initialize_trips_session():
     """Initialize trips page session state and prevent unwanted regeneration"""
+    # Only initialize once per session to prevent duplicate operations
+    if st.session_state.get('trips_page_initialized'):
+        return
+    
     # Only clear data if we're actually navigating to trips page (not on rerun)
     previous_page = st.session_state.get('current_page', '')
     is_page_navigation = previous_page != "trips"
     
-    # Clear any lingering trip generation flags to prevent regeneration
-    regeneration_keys = ["initial_prompt_processed", "chatbot_initialized"]
+    # Clear only UI-specific flags, preserve all trip data
+    ui_keys = ["chatbot_initialized", "chatbot_session_fully_initialized"]
     cleared_keys = []
     
-    for key in regeneration_keys:
+    for key in ui_keys:
         if key in st.session_state:
             del st.session_state[key]
             cleared_keys.append(key)
@@ -189,10 +194,11 @@ def initialize_trips_session():
             cleared_keys.append(key)
         
         if cleared_keys:
-            logger.info(f"Trips page navigation: Cleared session keys: {cleared_keys}")
+            logger.debug(f"Trips page navigation: Cleared UI keys: {cleared_keys}")
     
-    # Set trips page as active to prevent navigation issues
+    # Set trips page as active and mark as initialized
     st.session_state.current_page = "trips"
+    st.session_state.trips_page_initialized = True
 
 # Initialize the trips session
 initialize_trips_session()
@@ -202,16 +208,10 @@ if st.session_state.get('trip_just_saved'):
     st.success("Trip saved successfully! You can view it below.")
     # Clear the flag
     del st.session_state.trip_just_saved
-    logger.info("Displayed trip save success message")
 
 # Header with trip info
-st.markdown(f"""
-    <div style="text-align: center;">
-        <h1 style="color: #666;">📚 Saved Trips</h1>
-        <br>
-        <p style="opacity: 0.9;">Here you can find your saved trips, click on each trip to get details</p>
-    </div>
-""", unsafe_allow_html=True)
+st.markdown(MATERIAL_ICONS_CSS, unsafe_allow_html=True)
+st.markdown(TRIPS_HEADER, unsafe_allow_html=True)
 
 # Import trip storage
 try: 
@@ -236,7 +236,7 @@ try:
                 
                 with col1:
                     trip_name = trip.get('trip_name', 'Untitled Trip')
-                    st.subheader(f"🗺️ {trip_name}")
+                    st.subheader(f"{trip_name}")
                     st.write(f"**📍 Destination:** {trip.get('destination', 'Unknown')}")
                     st.write(f"**📅 Duration:** {trip.get('start_date', 'N/A')} to {trip.get('end_date', 'N/A')}")
                     st.write(f"**🎯 Type:** {trip.get('travel_type', 'N/A')}")

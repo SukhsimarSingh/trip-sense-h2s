@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from styles.styles import (
     FORM_PAGE_HTML,
     BASIC_INFO_HEADER,
-    ADDITIONAL_PREFERENCES_HEADER
+    ADDITIONAL_PREFERENCES_HEADER,
+    MATERIAL_ICONS_CSS
 )
 from services.prompt_loader import render_user_prompt
 
@@ -39,6 +40,9 @@ def get_travel_months(start_date: datetime, end_date: datetime) -> list[str]:
 if "form_data" not in st.session_state:
     st.session_state.form_data = {}
 
+# Load Material Icons CSS
+st.markdown(MATERIAL_ICONS_CSS, unsafe_allow_html=True)
+
 # Display session state for debugging
 # st.write(st.session_state)
 
@@ -47,19 +51,32 @@ form_data = st.session_state.form_data
 with st.container(horizontal_alignment="center"):
     st.markdown(body=FORM_PAGE_HTML, unsafe_allow_html=True)
 
-    with st.form(key="trip_form", clear_on_submit=False):
-        st.markdown(BASIC_INFO_HEADER, unsafe_allow_html=True)
+    with st.form(key="experiment_trip_form", clear_on_submit=False, border=False):
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        
+        with col2:
+            st.markdown(BASIC_INFO_HEADER, unsafe_allow_html=True)
+            # Origin
+            origin = st.text_input(
+                "🛫 From where?",
+                value=form_data.get('origin', ''),
+                placeholder="e.g., Paris, Tokyo",
+                help="Enter your origin city, country, or region"
+            )
 
-        col1, col2 = st.columns(2)
-        with col1:
+            st.markdown("<br>", unsafe_allow_html=True)
+
             destination = st.text_input(
-                "📍 Where do you want to go?",
+                "📍 To where?",
                 value=form_data.get('destination', ''),
-                placeholder="e.g., Paris, Tokyo, Himachal Pradesh",
+                placeholder="e.g., New York, England",
                 help="Enter your desired destination city, country, or region"
             )
 
-            today = datetime.now()   
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            today = datetime.now()
             
             # Set default dates from form_data if available
             default_start = today
@@ -76,9 +93,10 @@ with st.container(horizontal_alignment="center"):
                 "📅 When are you going?",
                 (default_start, default_end),
                 format="DD.MM.YYYY",
-                help="Select the dates for your trip"
+                help="Select the dates for your trip",
+                label_visibility="visible"
                 )
-
+            
             # Extract start and end dates with validation
             if len(date_range) == 2:
                 start_date = date_range[0]
@@ -95,8 +113,35 @@ with st.container(horizontal_alignment="center"):
                 end_date = start_date + timedelta(days=1)
             
             duration = (end_date - start_date).days
-        
-        with col2:
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                group_size = st.number_input(
+                    "👥 Number of travelers",
+                    min_value=1,
+                    max_value=100,
+                    value=form_data.get('group_size', 2),
+                    help="How many people will be traveling?"
+                )
+
+            with col2:
+                budget_options = ["Low Budget", "Medium Budget", "High Budget"]
+                budget_index = 1  # Default to Medium
+                if form_data.get('budget') in budget_options:
+                    budget_index = budget_options.index(form_data.get('budget'))
+                
+                budget = st.selectbox(
+                    "💰 What's your budget?",
+                    options=budget_options,
+                    index=budget_index,
+                    help="Select your preferred budget range for the trip"
+                )
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
             travel_type_options = [
                 "Adventure & Outdoor Activities",
                 "Cultural & Historical Sites", 
@@ -109,7 +154,7 @@ with st.container(horizontal_alignment="center"):
                 "Nature & Wildlife",
                 "Mixed Experience"
             ]
-            travel_type_index = 9  # Default to Mixed Experience
+            travel_type_index = 5  # Default to Mixed Experience
             if form_data.get('travel_type') in travel_type_options:
                 travel_type_index = travel_type_options.index(form_data.get('travel_type'))
             
@@ -119,31 +164,11 @@ with st.container(horizontal_alignment="center"):
                 index=travel_type_index,
                 help="Choose the type of activities you're most interested in"
             )
-            
-            budget_options = ["Low Budget (Budget-friendly options)", "Medium Budget (Comfortable spending)", "High Budget (Luxury experience)"]
-            budget_index = 1  # Default to Medium
-            if form_data.get('budget') in budget_options:
-                budget_index = budget_options.index(form_data.get('budget'))
-            
-            budget = st.selectbox(
-                "💰 What's your budget range?",
-                options=budget_options,
-                index=budget_index,
-                help="Select your preferred budget range for the trip"
-            )
-        
-        # Additional preferences
-        st.markdown(ADDITIONAL_PREFERENCES_HEADER, unsafe_allow_html=True)
-        
-        with st.container(horizontal=True, horizontal_alignment="center"):
-            group_size = st.number_input(
-                "👥 Number of travelers",
-                min_value=1,
-                max_value=100,
-                value=form_data.get('group_size', 2),
-                help="How many people will be traveling?"
-            )
-            
+
+            st.markdown("---", unsafe_allow_html=True)
+
+            st.markdown(ADDITIONAL_PREFERENCES_HEADER, unsafe_allow_html=True)
+
             accommodation_options = ["Any", "Hotels", "Hostels", "Vacation Rentals", "Resorts", "Boutique Properties"]
             accommodation_index = 0  # Default to Any
             if form_data.get('accommodation') in accommodation_options:
@@ -155,77 +180,78 @@ with st.container(horizontal_alignment="center"):
                 index=accommodation_index,
                 help="What type of accommodation do you prefer?"
             )
-        
-        special_requests = st.text_area(
-            "📝 Any special requests or interests?",
-            value=form_data.get('special_requests', ''),
-            placeholder="e.g., vegetarian food options, accessibility needs, specific attractions to visit...",
-            help="Tell us about any specific requirements or interests"
-        )
 
-        season = get_season_from_date(start_date)
-        travel_months = get_travel_months(start_date, end_date)
-        
-        # Form submission
-        st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
 
-        # Always save form data to session state (for persistence)
-        current_form_data = {
-            "destination": destination,
-            "duration": duration,
-            "start_date": start_date.isoformat(),
-            "end_date": end_date.isoformat(),
-            "season": season,
-            "travel_months": travel_months,
-            "travel_type": travel_type,
-            "budget": budget,
-            "group_size": group_size,
-            "accommodation": accommodation,
-            "special_requests": special_requests
-        }
-        st.session_state.form_data = current_form_data
+            special_requests = st.text_area(
+                "📝 Any special requests or interests?",
+                value=form_data.get('special_requests', ''),
+                placeholder="e.g., vegetarian food options, accessibility needs, specific attractions to visit...",
+                help="Tell us about any specific requirements or interests"
+            )
 
-        with st.container(horizontal=True, horizontal_alignment="center"):
+            st.markdown("<br>", unsafe_allow_html=True)
 
-            back_button = st.form_submit_button("⬅️ Back to Home", type="secondary", width="content")
-            
-            if back_button:
-                st.session_state.form_data = {}
-                st.switch_page("app.py")
+            season = get_season_from_date(start_date)
+            travel_months = get_travel_months(start_date, end_date)
 
-            submitted = st.form_submit_button("Generate My Trip Plan", type="primary", width="content")
-            
-            if submitted:
-                if not destination.strip():
-                    st.error("Please enter a destination!")
-                else:
-                    # Store the trip data when submitted
-                    st.session_state.trip_data = current_form_data.copy()
-                                        
-                    # Prepare template context
-                    context = {
-                        'destination': destination,
-                        'duration': duration,
-                        'start_date': start_date.strftime("%B %d, %Y"),
-                        'end_date': end_date.strftime("%B %d, %Y"),
-                        'season': season,
-                        'travel_months': ", ".join(travel_months),
-                        'group_size': group_size,
-                        'travel_type': travel_type,
-                        'budget': budget,
-                        'accommodation': accommodation,
-                        'special_requests': special_requests.strip() if special_requests.strip() else None
-                    }
-                    
-                    # Render the prompt using the template
-                    initial_prompt = render_user_prompt(context)
-                    
-                    # Store the initial prompt for future use
-                    st.session_state.initial_prompt = initial_prompt
-                    
-                    # Show success message and navigate to chatbot
-                    st.success("🎉 Trip plan generated! Redirecting to your AI assistant...")
-                    st.info("💡 Your AI assistant will help you refine and customize your itinerary.")
-                    
-                    # Navigate to chatbot page
-                    st.switch_page("pages/chatbot.py")
+            # Always save form data to session state (for persistence)
+            current_form_data = {
+                "destination": destination,
+                "duration": duration,
+                "start_date": start_date.isoformat(),
+                "end_date": end_date.isoformat(),
+                "season": season,
+                "travel_months": travel_months,
+                "travel_type": travel_type,
+                "budget": budget,
+                "group_size": group_size,
+                "accommodation": accommodation,
+                "special_requests": special_requests
+            }
+            st.session_state.form_data = current_form_data
+
+            with st.container(horizontal=True, horizontal_alignment="center"):
+
+                back_button = st.form_submit_button("Back to Home", type="secondary", width="content")
+                
+                if back_button:
+                    st.session_state.form_data = {}
+                    st.switch_page("pages/landing.py")
+
+                submitted = st.form_submit_button("Generate My Trip Plan", type="primary", width="content")
+                
+                if submitted:
+                    if not destination.strip():
+                        st.error("Please enter a destination!")
+                    else:
+                        # Store the trip data when submitted
+                        st.session_state.trip_data = current_form_data.copy()
+                                            
+                        # Prepare template context
+                        context = {
+                            'destination': destination,
+                            'duration': duration,
+                            'start_date': start_date.strftime("%B %d, %Y"),
+                            'end_date': end_date.strftime("%B %d, %Y"),
+                            'season': season,
+                            'travel_months': ", ".join(travel_months),
+                            'group_size': group_size,
+                            'travel_type': travel_type,
+                            'budget': budget,
+                            'accommodation': accommodation,
+                            'special_requests': special_requests.strip() if special_requests.strip() else None
+                        }
+                        
+                        # Render the prompt using the template
+                        initial_prompt = render_user_prompt(context)
+                        
+                        # Store the initial prompt for future use
+                        st.session_state.initial_prompt = initial_prompt
+                        
+                        # Show success message and navigate to chatbot
+                        st.success("🎉 Trip plan generated! Redirecting to your AI assistant...")
+                        st.info("💡 Your AI assistant will help you refine and customize your itinerary.")
+                        
+                        # Navigate to chatbot page
+                        st.switch_page("pages/chatbot.py")

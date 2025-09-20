@@ -4,17 +4,21 @@ This module contains all the styling components to keep the main app files clean
 """
 
 # Landing Page Styles
+MATERIAL_ICONS_CSS = """
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+"""
+
 LANDING_PAGE_HTML = """
     <div style="text-align: center; padding: 3rem 0;">
-        <h1 style="font-size: 3.5rem; margin-bottom: 1rem; background: linear-gradient(45deg, #FF6B6B, #4ECDC4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-            🧭 AI Trip Planner
+        <h1 style="font-size: 3.5rem; margin-bottom: 1rem;">
+        <span class="material-icons" style="font-size: 3.5rem; vertical-align: middle; color: #cb785c;">beach_access</span> Trip Sense
         </h1>
         <br>
-        <h3 style="color: #666; margin-bottom: 2rem; font-weight: 300;">
+        <h3 style="margin-bottom: 2rem; font-weight: 300;">
             Plan your perfect adventure with AI-powered recommendations
         </h3>
         <br>
-        <p style="font-size: 1.2rem; color: #888; max-width: 600px; margin: 0 auto 3rem auto; line-height: 1.6;">
+        <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem auto; line-height: 1.6;">
             From budget-friendly getaways to luxury escapes, our AI assistant helps you discover amazing destinations, 
             create detailed itineraries, and find the best places to visit based on your preferences.
         </p>
@@ -22,21 +26,21 @@ LANDING_PAGE_HTML = """
 """
 
 PERSONALISED_WIDGET = """
-    <div style="color: #666; text-align: center; padding: 2rem 1rem; border-radius: 20px; margin: 2rem 1rem;">
+    <div style="text-align: center; padding: 2rem 1rem; margin: 2rem 1rem;">
         <h4>🎯 Personalized</h4>
         <p>Tailored recommendations based on your travel style, budget, and interests</p>
     </div>
 """
 
 PLANNING_WIDGET = """
-    <div style="color: #666; text-align: center; padding: 2rem 1rem; border-radius: 20px; margin: 2rem 1rem;">
+    <div style="text-align: center; padding: 2rem 1rem; margin: 2rem 1rem;">
         <h4>🗺️ Smart Planning</h4>
         <p>AI-powered itineraries with real-time maps, directions, and local insights</p>
     </div>
 """
 
 INTERACTIVE_WIDGET = """
-    <div style="color: #666; text-align: center; padding: 2rem 1rem; border-radius: 20px; margin: 2rem 1rem;">
+    <div style="text-align: center; padding: 2rem 1rem; margin: 2rem 1rem;">
         <h4>💬 Interactive</h4>
         <p>Chat with our AI assistant to refine your plans and get instant answers</p>
     </div>
@@ -45,15 +49,29 @@ INTERACTIVE_WIDGET = """
 # Form Page Styles
 FORM_PAGE_HTML = """
     <div style="text-align: center; padding: 3rem 0;">
-        <h1 style="color: #666;">✈️ Tell Us About Your Dream Trip</h1>
+        <h1><span class="material-icons" style="font-size: 3.5rem; vertical-align: middle; color: #cb785c;">flight_takeoff</span> Tell Us About Your Dream Trip</h1>
         <br>
         <p style="color: #666; font-size: 1.1rem;">Fill in the details below to get personalized recommendations</p>
     </div>
 """
 
+CHATBOT_HEADER = """
+    <div style="text-align: center; padding: 2rem 0;">
+        <h1><span class="material-icons" style="font-size: 3.5rem; vertical-align: middle; color: #cb785c;">travel_explore</span> Your AI Trip Assistant</h1>
+        <br>
+    </div>
+    """
+    
+TRIPS_HEADER = """
+    <div style="text-align: center; padding: 2rem 0;">
+        <h1><span class="material-icons" style="font-size: 3.5rem; vertical-align: middle; color: #cb785c;">book</span> Saved Trips</h1>
+        <br>
+    </div>
+    """
+    
 # Section Headers
-BASIC_INFO_HEADER = """<h5 style="color: #666;"> Basic Info</h5>"""
-ADDITIONAL_PREFERENCES_HEADER = """<h5 style="color: #666;">Additional Preferences (Optional)</h5>"""
+BASIC_INFO_HEADER = """<h5> Basic Info</h5>"""
+ADDITIONAL_PREFERENCES_HEADER = """<h5>Additional Preferences (Optional)</h5>"""
 
 # Common CSS Classes (if needed for future use)
 CSS_STYLES = """
@@ -70,7 +88,6 @@ CSS_STYLES = """
         color: #666;
         text-align: center;
         padding: 2rem 1rem;
-        border-radius: 20px;
         margin: 2rem 1rem;
     }
     

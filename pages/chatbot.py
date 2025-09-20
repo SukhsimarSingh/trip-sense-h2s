@@ -6,6 +6,7 @@ from services.gemini import TripSenseAI
 from services.prompt_loader import load_system_prompt
 from services.logging import logger, initialize_metrics
 from services.trip_storage import trip_storage
+from styles.styles import CHATBOT_HEADER, MATERIAL_ICONS_CSS
 
 SYSTEM_INSTRUCTION = load_system_prompt()
 
@@ -40,62 +41,61 @@ def clean_and_render_markdown(content: str) -> None:
 # Initialize chatbot-specific session state
 def initialize_chatbot_session():
     """Initialize chatbot session state variables"""
-    if "chatbot_initialized" not in st.session_state:
+    # Use a more specific flag to prevent duplicate initialization
+    init_key = "chatbot_session_fully_initialized"
+    
+    if init_key not in st.session_state:
+        # Initialize all required session state variables
         st.session_state.chatbot_initialized = True
-        logger.info("Chatbot session initialized")
+        st.session_state.trip_data = st.session_state.get('trip_data', {})
+        st.session_state.initial_prompt = st.session_state.get('initial_prompt', None)
+        st.session_state.initial_prompt_processed = st.session_state.get('initial_prompt_processed', False)
+        st.session_state.main_trip_itinerary = st.session_state.get('main_trip_itinerary', None)
         
-    if "trip_data" not in st.session_state:
-        st.session_state.trip_data = {}
-        logger.debug("Trip data initialized")
+        # Initialize messages only if not already present
+        if "messages" not in st.session_state:
+            st.session_state.messages = [
+                {"role": "assistant", "content": "Hi! I can help plan trips. Tell me destination, dates, budget, interests."},
+            ]
+            logger.info("Chatbot session initialized with welcome message")
+        else:
+            logger.debug("Chatbot session initialized (messages preserved)")
+        
+        # Mark as fully initialized
+        st.session_state[init_key] = True
 
-    if "initial_prompt" not in st.session_state:
-        st.session_state.initial_prompt = None
-        logger.debug("Initial prompt state initialized")
-
-    # Initialize messages only if not already initialized for this session
-    if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Hi! I can help plan trips. Tell me destination, dates, budget, interests."},
-        ]
-        logger.info("Chat messages initialized with welcome message")
-    
-    # Flag to track if initial prompt has been processed
-    if "initial_prompt_processed" not in st.session_state:
-        st.session_state.initial_prompt_processed = False
-        logger.debug("Initial prompt processing flag initialized")
-    
-    # Track the main trip itinerary separately from chat responses
-    if "main_trip_itinerary" not in st.session_state:
-        st.session_state.main_trip_itinerary = None
-        logger.debug("Main trip itinerary tracking initialized")
-
-# Initialize the chatbot session
+# Always initialize the chatbot session (but with controlled logging)
 initialize_chatbot_session()
+
+# Reset rerunning flag at the start of each script execution
+if st.session_state.get('rerunning', False):
+    st.session_state.rerunning = False
 
 # Function to clean up chatbot session state when navigating away
 def cleanup_chatbot_session():
     """Clean up chatbot-specific session state"""
+    # Always preserve trip-related data to prevent regeneration
     keys_to_remove = [
         "messages", 
-        "initial_prompt_processed", 
-        "chatbot_initialized"
+        "chatbot_initialized",
+        "chatbot_session_fully_initialized"
     ]
+    
+    # Never remove these keys as they prevent regeneration issues:
+    # - initial_prompt_processed
+    # - trip_data  
+    # - initial_prompt
+    # - main_trip_itinerary
+    
     removed_keys = []
     for key in keys_to_remove:
         if key in st.session_state:
             del st.session_state[key]
             removed_keys.append(key)
     
-    # Set initial_prompt_processed to True to prevent regeneration
-    # when returning to chatbot with existing trip data
-    if st.session_state.get('trip_data') and st.session_state.get('initial_prompt'):
-        st.session_state.initial_prompt_processed = True
-        logger.debug("Set initial_prompt_processed to True to prevent regeneration")
-    
+    # Only log if we actually removed something significant
     if removed_keys:
-        logger.info(f"Cleaned up chatbot session state: {removed_keys}")
-    else:
-        logger.debug("No chatbot session state to clean up")
+        logger.debug(f"Cleaned up chatbot UI state: {removed_keys}")
 
 # Chat interface UI
 def render_chat():
@@ -108,6 +108,9 @@ def render_chat():
 # Uncomment below line for debugging session state
 # st.write(st.session_state)
 
+st.markdown(MATERIAL_ICONS_CSS, unsafe_allow_html=True)
+st.markdown(CHATBOT_HEADER, unsafe_allow_html=True)
+
 # Safety check: If no trip data, redirect to form
 if not st.session_state.get('trip_data') or not st.session_state.get('initial_prompt'):
     st.warning("No trip data found. Please create a new trip plan.")
@@ -115,8 +118,10 @@ if not st.session_state.get('trip_data') or not st.session_state.get('initial_pr
     
     # Clear any partial session state
     cleanup_chatbot_session()
+
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    if st.button("📝 Create New Trip Plan", type="primary"):
+    if st.button("Create New Trip Plan", type="primary"):
         st.switch_page("pages/form.py")
     
     st.stop()  # Stop execution here
@@ -131,13 +136,7 @@ if st.session_state.trip_data:
 else:
     trip_description = f"Please fill the form to get the itinerary!"
 
-st.markdown(f"""
-<div style="text-align: center; padding: 2rem 0;">
-    <h1 style="color: #666;">Your AI Trip Assistant</h1>
-    <br>
-    <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">{trip_description}</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown(f"""<p style="margin: 0.5rem 0 0 0; opacity: 0.9;">{trip_description}</p>""", unsafe_allow_html=True)
 
 with st.container(border=True):
     # Process initial prompt only once
@@ -163,8 +162,10 @@ with st.container(border=True):
                     st.session_state.main_trip_itinerary = model_response
                     logger.info(f"Initial plan response added to messages ({len(model_response)} characters)")
                     logger.info("Stored as main trip itinerary for saving")
-                    # Force rerun to display the initial response
-                    st.rerun()
+                    # Force rerun to display the initial response (only if not already rerunning)
+                    if not st.session_state.get('rerunning', False):
+                        st.session_state.rerunning = True
+                        st.rerun()
                 else:
                     logger.warning(f"Invalid or empty response from initial plan generation: '{model_response}'")
                     error_msg = "I'm having trouble generating your trip plan right now. Please try refreshing the page or contact support."
@@ -182,12 +183,10 @@ with st.container(border=True):
     
     # Add chat input for user interaction
     if prompt := st.chat_input("Ask me anything about your trip..."):
-        logger.info(f"User sent message: '{prompt[:100]}{'...' if len(prompt) > 100 else ''}'")
-        logger.debug(f"Current message history length: {len(st.session_state.messages)}")
+        logger.debug(f"User sent message: '{prompt[:50]}{'...' if len(prompt) > 50 else ''}'")
         
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
-        logger.debug("User message added to chat history")
         
         # Generate AI response
         with st.spinner("Thinking..."):
@@ -197,9 +196,9 @@ with st.container(border=True):
                 # Validate response
                 if response and len(response.strip()) > 5:  # Ensure meaningful response
                     st.session_state.messages.append({"role": "assistant", "content": response})
-                    logger.info(f"AI response generated and added to messages ({len(response)} characters)")
+                    logger.debug(f"AI response generated ({len(response)} chars)")
                 else:
-                    logger.warning(f"Invalid or empty chat response: '{response}'")
+                    logger.warning(f"Invalid or empty chat response")
                     error_msg = "I'm having trouble responding right now. Could you please rephrase your question?"
                     st.session_state.messages.append({"role": "assistant", "content": error_msg})
                     
@@ -208,9 +207,10 @@ with st.container(border=True):
                 error_msg = "I encountered an error processing your message. Please try again."
                 st.session_state.messages.append({"role": "assistant", "content": error_msg})
         
-        # Rerun to display the new messages
-        logger.debug("Triggering UI rerun to display new messages")
-        st.rerun()
+        # Rerun to display the new messages (only if not already rerunning)
+        if not st.session_state.get('rerunning', False):
+            st.session_state.rerunning = True
+            st.rerun()
 
 
 # Navigation buttons
@@ -265,7 +265,7 @@ with st.container(horizontal_alignment="center", horizontal=True):
                 # Save the trip
                 trip_id = trip_storage.save_trip(structured_trip_data)
                 st.success(f"Trip saved successfully! Trip ID: {trip_id}")
-                logger.info(f"Manual trip save successful with ID: {trip_id}")
+                logger.info(f"Trip saved with ID: {trip_id}")
                 
                 # Clear session state after successful save
                 cleanup_chatbot_session()
@@ -274,7 +274,6 @@ with st.container(horizontal_alignment="center", horizontal=True):
                 for key in keys_to_clear:
                     if key in st.session_state:
                         del st.session_state[key]
-                        logger.info(f"Cleared session state key: {key}")
                 
                 # Navigate to saved trips page
                 st.switch_page("pages/trips.py")
