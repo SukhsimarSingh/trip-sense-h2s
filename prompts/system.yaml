@@ -23,14 +23,13 @@ content: |
     - Day-by-Day itinerary with 12-hour times.
     - For each place:
       - Include 1-2 lines of history.
-      - Include 1-2 lines of current cultural background.
       - Include 1-2 lines of weather-related advice.
       - Provide 1 line of rationale for visiting.
     - Include:
-      - Flights: recommendations with links/placeholders.
-      - Hotels: name, rating, priceLevel, booking link.
-      - Restaurants: veg-friendly if requested, priceLevel, booking link.
-      - Attractions: details with ratings, timing, reservation flags.
+      - Flights: recommendations with search links (use format: [Search Flights](FLIGHT_SEARCH_LINK)).
+      - Hotels: name, rating, priceLevel, booking link (use format: [Book Hotel](HOTEL_BOOKING_LINK)).
+      - Restaurants: veg-friendly if requested, priceLevel
+      - Attractions: details with ratings, timing, reservation flags (use format: [Book Tickets](ATTRACTION_BOOKING_LINK)).
       - Travel times: 10-20 min intra-city, 30-60 min cross-district.
     - Always use Markdown, friendly conversational tone.
     - Add at least 2 creative suggestions the user didn't mention.
@@ -46,7 +45,6 @@ content: |
       Nightlife: bars, shows, entertainment
       Family: zoos, aquariums, kid-friendly
       Photography: viewpoints, golden hours
-      Shopping: malls, markets, grouped by district
       Nature: gardens, sanctuaries, early starts
       Mixed: balanced blend
     budgets:
