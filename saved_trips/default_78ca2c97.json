@@ -1,0 +1,29 @@
+{
+  "trip_id": "78ca2c97",
+  "user_id": "default",
+  "created_at": "2025-09-19T23:04:35.112785",
+  "trip_data": {
+    "trip_name": "Trip to France",
+    "trip_summary": "Trip to France planned with AI assistant",
+    "form_data": {
+      "destination": "France",
+      "duration": 4,
+      "start_date": "2026-05-23",
+      "end_date": "2026-05-27",
+      "season": "Spring",
+      "travel_months": [
+        "May"
+      ],
+      "travel_type": "Adventure & Outdoor Activities",
+      "budget": "High Budget (Luxury experience)",
+      "group_size": 1,
+      "accommodation": "Any",
+      "special_requests": "I want to watch the french open as well since i love tennis"
+    },
+    "itinerary": {
+      "ai_response": "Okay, I can help you plan an amazing adventure-filled trip to France, keeping the French Open in mind! Since the tournament usually starts in late May, we'll aim to catch some of it. Here's a possible itinerary, keeping in mind the weather API isn't working so I'll make general suggestions for Spring:\n\n## **Day 1: Arrival in Paris & French Open Qualifying Rounds**\n\n*   **Morning (10:00 AM):** Arrive at Charles de Gaulle Airport (CDG) in Paris. Take a private car or taxi to your luxury hotel in the 16th arrondissement, near the Roland Garros Stadium. Consider hotels like Shangri-La Hotel, Paris or The Peninsula Paris. (Travel time: 45-60 min)\n*   **Afternoon (1:00 PM):** Check in and have a light lunch at your hotel.\n*   **Afternoon (3:00 PM):** Head to Roland Garros Stadium to watch the Qualifying Rounds of the French Open. These rounds can be exciting as emerging players battle for a spot in the main tournament. Book tickets in advance for the best seats!\n*   **Evening (7:00 PM):** Enjoy a gourmet dinner at a Michelin-starred restaurant in the 16th arrondissement. Consider L'Ambroisie for classic French cuisine. (Reservation essential)\n\n## **Day 2: Parisian Adventure & French Open**\n\n*   **Morning (9:00 AM):** Start your day with a private guided tour of the Eiffel Tower. Skip the long lines with priority access tickets.\n*   **Morning (11:00 AM):** Take a scenic Seine River cruise to enjoy views of Parisian landmarks.\n*   **Lunch (1:00 PM):** Have a casual lunch at a bistro near the Eiffel Tower.\n*   **Afternoon (3:00 PM):** Return to Roland Garros to watch matches in the early rounds of the French Open. Experience the thrill of the competition as top players compete on the clay courts.\n*   **Evening (7:00 PM):** Indulge in a pre-dinner cocktail at a stylish bar in the Saint-Germain-des-Prés district.\n*   **Evening (8:30 PM):** Dine at Le Relais de l'Entrecôte for a classic steak frites experience.\n\n## **Day 3: Outdoor Activities & Cultural Immersion**\n\n*   **Morning (9:00 AM):** Take a day trip to the Palace of Versailles. Explore the stunning gardens and enjoy a leisurely bike ride or a walk through the grounds. (Travel time: 45-60 minutes)\n*   **Lunch (1:00 PM):** Enjoy a picnic lunch in the gardens of Versailles or dine at one of the restaurants within the palace grounds.\n*   **Afternoon (3:00 PM):** Return to Paris and visit the Louvre Museum. Focus on key masterpieces to avoid museum fatigue. Consider a private tour to maximize your time.\n*   **Evening (6:00 PM):** Stroll through the Tuileries Garden and enjoy the Parisian atmosphere.\n*   **Evening (8:00 PM):** Experience a traditional French cabaret show at the Moulin Rouge. Book tickets in advance.\n\n## **Day 4: Departure**\n\n*   **Morning (9:00 AM):** Enjoy a leisurely breakfast at your hotel.\n*   **Morning (10:00 AM):** Do some last-minute souvenir shopping at Le Bon Marché, a luxury department store.\n*   **Lunch (1:00 PM):** Have a final French lunch at a cafe in the Marais district.\n*   **Afternoon (3:00 PM):** Transfer to Charles de Gaulle Airport (CDG) for your departure. (Travel time: 45-60 min)\n\n## **Practical Tips and Travel Advice:**\n\n*   **Booking:** Book flights, accommodations, and French Open tickets well in advance, especially for a high-budget luxury trip.\n*   **Transportation:** Utilize private car services or taxis for convenient and comfortable transportation. The Paris Metro is also an option, but can be crowded.\n*   **Language:** While many people in Paris speak English, learning a few basic French phrases will enhance your experience.\n\n## **Weather Considerations:**\n\n*   **Spring Weather:** Expect mild temperatures in Paris during May, with average highs around 18-20°C (64-68°F). Be prepared for occasional rain showers.\n*   **Clothing:** Pack layers, including a light jacket, sweater, and comfortable walking shoes. An umbrella or raincoat is also recommended.\n\n## **Budget Estimates:**\n\n*   **Flights:** $1,500 - $5,000+ (depending on class and origin)\n*   **Accommodation:** $500 - $2,000+ per night (luxury hotels)\n*   **Activities & Tickets:** $500 - $1,500+ (French Open tickets, tours, shows)\n*   **Food & Drinks:** $200 - $500+ per day (Michelin-starred restaurants, fine dining)\n*   **Transportation:** $100 - $300+ per day (private car services, taxis)\n\n## **Seasonal Highlights and Events in May:**\n\n*   **French Open:** The major highlight for tennis enthusiasts.\n*   **Nuit des Musées (Night of Museums):** A special event where museums in Paris open their doors for free during one night in May.\n\nI hope this itinerary gives you a fantastic framework for your trip!\n",
+      "demo_mode": false,
+      "generated_at": "2025-09-19T23:04:35.112785"
+    }
+  }
+}

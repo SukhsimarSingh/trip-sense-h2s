@@ -1,0 +1,29 @@
+{
+  "trip_id": "08cceddd",
+  "user_id": "default",
+  "created_at": "2025-09-19T23:59:45.551601",
+  "trip_data": {
+    "trip_name": "Trip to Colombia",
+    "trip_summary": "Trip to Colombia planned with AI assistant",
+    "form_data": {
+      "destination": "Colombia",
+      "duration": 2,
+      "start_date": "2025-09-19",
+      "end_date": "2025-09-21",
+      "season": "Autumn",
+      "travel_months": [
+        "September"
+      ],
+      "travel_type": "Food & Culinary Experiences",
+      "budget": "Low Budget (Budget-friendly options)",
+      "group_size": 1,
+      "accommodation": "Hostels",
+      "special_requests": ""
+    },
+    "itinerary": {
+      "ai_response": "Okay, here's a tasty 2-day culinary adventure in Colombia, perfect for a solo traveler on a budget, keeping in mind it's September:\n\n**General Notes for September in Colombia:**\n\n*   Expect pleasant temperatures in many regions, but be prepared for potential rain, especially in the afternoons. Pack layers and a light rain jacket.\n*   September is shoulder season, so you might find fewer crowds and better deals on accommodations and tours.\n*   Keep an eye out for local food festivals or harvest celebrations that might be happening during your visit.\n\n**Day 1: Bogotá - Ajiaco and Coffee Culture**\n\n*   **9:00 AM:** Start your day in La Candelaria, Bogotá's historic district. Wander through the colorful streets and admire the colonial architecture.\n*   **10:00 AM:** Visit a local market like Paloquemao. Sample exotic fruits, arepas, and other local snacks. (Budget: \\$5-10)\n*   **12:00 PM:** Lunch at La Puerta Falsa, Bogotá's oldest restaurant, for a traditional Ajiaco soup (chicken and potato soup). (Budget: \\$10-15)\n*   **2:00 PM:** Immerse yourself in Colombian coffee culture with a coffee tasting tour. Several cafes in La Candelaria offer these experiences. (Budget: \\$15-25)\n*   **4:00 PM:** Explore the Gold Museum (Museo del Oro) to learn about pre-Columbian cultures and their gold artistry. (Entrance fee: ~$4)\n*   **6:00 PM:** Enjoy a budget-friendly dinner at a local \"corrientazo\" restaurant – a set lunch menu offering hearty Colombian fare. (Budget: \\$5-8)\n*   **7:30 PM:** Experience the nightlife in La Candelaria, known for its lively bars and street performers.\n\n**Day 2: Medellín - Street Food and City Views**\n\n*   **9:00 AM:** Take a morning flight from Bogotá to Medellín (approx. 1-hour flight). Book in advance for better prices.\n*   **10:30 AM:** Arrive in Medellín and head to your hostel in El Poblado.\n*   **11:30 AM:** Embark on a street food tour in El Poblado. Sample arepas, empanadas, and other local delicacies. (Budget: \\$15-25)\n*   **1:30 PM:** Take the MetroCable up to Comuna 13, a neighborhood known for its vibrant street art and transformation. Enjoy the views and learn about the area's history.\n*   **3:30 PM:** Enjoy lunch at a local restaurant in Comuna 13. (Budget: \\$8-12)\n*   **5:00 PM:** Explore Parque Arví, a nature reserve accessible by MetroCable. Enjoy a relaxing walk and take in the views.\n*   **7:00 PM:** Enjoy dinner at a restaurant in El Poblado known for its trendy atmosphere and diverse culinary offerings. (Budget: \\$10-20)\n\n**Accommodation:**\n\n*   Look for hostels in La Candelaria (Bogotá) and El Poblado (Medellín) for budget-friendly options. Expect to pay around \\$10-20 per night for a dorm bed.\n\n**Transportation:**\n\n*   Bogotá: Use TransMilenio (bus rapid transit) and taxis.\n*   Medellín: Utilize the Metro and MetroCable system for efficient and affordable transportation.\n\n**Budget Estimates (per day):**\n\n*   Accommodation: \\$15\n*   Food: \\$30-40\n*   Activities: \\$15-25\n*   Transportation: \\$10\n\n**Total estimated budget for 2 days: \\$140 - \\$180 (excluding flights)**\n\nEnjoy your culinary adventure in Colombia!\n",
+      "demo_mode": false,
+      "generated_at": "2025-09-19T23:59:45.551601"
+    }
+  }
+}
