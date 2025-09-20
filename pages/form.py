@@ -144,7 +144,6 @@ with st.container(horizontal_alignment="center"):
                 "Nightlife & Entertainment",
                 "Family-Friendly Activities",
                 "Photography & Sightseeing",
-                "Shopping & Markets",
                 "Nature & Wildlife",
                 "Mixed Experience"
             ]
