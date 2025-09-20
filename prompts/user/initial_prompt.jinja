@@ -1,4 +1,5 @@
 Plan a trip with the following preferences:
+Origin: {{ origin }}
 Destination: {{ destination }}
 Duration: {{ duration }} days
 {% if start_date and end_date %}Travel dates: {{ start_date }} to {{ end_date }}{% endif %}
@@ -11,10 +12,12 @@ Accommodation preference: {{ accommodation }}
 {% if special_requests %}Special requests: {{ special_requests }}{% else %}No special requests{% endif %}
 Special requests: {{ special_requests }}
 Please create a detailed, conversational itinerary with:
-1) A day-by-day plan with specific recommendations
-2) Practical tips and travel advice considering the season and time of year
-3) Weather considerations and appropriate activities for {{ season }} travel
-4) Budget estimates and booking suggestions
-5) Seasonal highlights and events that might be happening during {{ travel_months }}
+1) Transportation options from {{ origin }} to {{ destination }} with estimated costs and travel times
+2) A day-by-day plan with specific recommendations
+3) Practical tips and travel advice considering the season and time of year
+4) Weather considerations and appropriate activities for {{ season }} travel
+5) Budget estimates and booking suggestions
+6) Seasonal highlights and events that might be happening during {{ travel_months }}
+7) Time zone differences and jet lag considerations if traveling from {{ origin }}
 
 Format your response in clear markdown with headings and bullet points for easy reading.
