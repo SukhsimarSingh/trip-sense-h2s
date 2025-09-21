@@ -35,7 +35,10 @@ safety_settings = [
 def get_gemini_client():
     """Initialize and cache the Gemini client to avoid recreating on every page load."""
     try:
-        api_key = os.getenv("GEMINI_API_KEY")
+        try:
+            api_key = os.getenv("GEMINI_API_KEY")
+        except:
+            api_key = st.secrets["GEMINI_API_KEY"]
         client = genai.Client(api_key=api_key)
         logger.info("Gemini client initialized and cached")
         return client
