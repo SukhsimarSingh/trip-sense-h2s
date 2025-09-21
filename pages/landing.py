@@ -4,9 +4,6 @@ from styles.styles import (
     WIDGETS
 )
 
-# Set page config
-st.set_page_config(page_title="Trip Sense", page_icon=":material/beach_access:", layout="wide")
-
 # Main landing page content
 with st.container(horizontal_alignment="center"):
 

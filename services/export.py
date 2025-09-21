@@ -31,7 +31,7 @@ def generate_trip_pdf(trip_data, form_data, itinerary, trip_name, trip_id):
         fontSize=24,
         spaceAfter=30,
         textColor=colors.HexColor('#2E86AB'),
-        alignment=1  # Center alignment
+        alignment=1
     )
     
     heading_style = ParagraphStyle(
@@ -127,10 +127,8 @@ def generate_trip_pdf(trip_data, form_data, itinerary, trip_name, trip_id):
         if itinerary_content:
             # Process the itinerary content with improved parsing
             try:
-                # Clean and process the markdown content
                 processed_content = clean_markdown_for_pdf(itinerary_content)
                 
-                # Extract sections for better organization
                 sections = extract_and_format_content_sections(processed_content)
                 
                 # Process each section
@@ -290,46 +288,28 @@ def prepare_markdown_content(content):
     if not content:
         return ""
     
-    # Clean up the content
     content = content.strip()
     
-    # Ensure content starts with H1 heading for proper hierarchy
     if not content.startswith('#'):
         content = f"# Trip Itinerary\n\n{content}"
     
-    # Fix common markdown issues
-    # Ensure proper spacing around headers
     content = re.sub(r'\n(#{1,6})', r'\n\n\1', content)
     content = re.sub(r'(#{1,6}.*?)\n([^#\n])', r'\1\n\n\2', content)
-    
-    # Fix bullet point formatting - convert asterisks to proper markdown bullets
-    # Handle inline bullets (like "* 1:30 PM: text")
     content = re.sub(r'\s*\*\s*(\d{1,2}:\d{2}\s*[AP]M)', r'\n\n* **\1**', content)
-    
-    # Ensure bullet points are on separate lines
     content = re.sub(r'^(\s*)\*\s*', r'\1* ', content, flags=re.MULTILINE)
-    
-    # Add proper spacing around bullet points
     content = re.sub(r'\n(\s*\*)', r'\n\n\1', content)
-    
-    # Clean up excessive newlines but preserve intentional breaks
     content = re.sub(r'\n{4,}', '\n\n\n', content)
-    
-    # Ensure the content starts clean
     content = content.lstrip('\n')
     
     return content
 
 def convert_markdown_links_to_pdf(text):
     """Convert markdown links to ReportLab-compatible clickable links"""
-    # Pattern to match markdown links: [text](url)
     def link_replacer(match):
         link_text = match.group(1)
         url = match.group(2)
-        # Create a clickable link in ReportLab format
         return f'<a href="{url}" color="blue">{link_text}</a>'
     
-    # Replace markdown links with ReportLab link format
     text = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', link_replacer, text)
     
     return text
@@ -345,13 +325,10 @@ def extract_and_format_content_sections(content):
     for line in lines:
         line = line.strip()
         
-        # Detect section headers
         if line.startswith('### ') and any(keyword in line.lower() for keyword in ['flight', 'day', 'practical', 'budget', 'seasonal', 'creative']):
-            # Save previous section
             if current_content:
                 sections[current_section] = '\n'.join(current_content)
             
-            # Start new section
             if 'flight' in line.lower():
                 current_section = 'flights'
             elif 'day' in line.lower():
@@ -375,7 +352,6 @@ def extract_and_format_content_sections(content):
         else:
             current_content.append(line)
     
-    # Save the last section
     if current_content:
         sections[current_section] = '\n'.join(current_content)
     
