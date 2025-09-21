@@ -6,7 +6,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib import colors
 from datetime import datetime
-from markdown_pdf import MarkdownPdf, Section
 
 def generate_trip_pdf(trip_data, form_data, itinerary, trip_name, trip_id):
     """Generate a PDF document for the trip"""
@@ -126,56 +125,112 @@ def generate_trip_pdf(trip_data, form_data, itinerary, trip_name, trip_id):
             itinerary_content = itinerary['demo_response']
         
         if itinerary_content:
-            # Use markdown-pdf to create a temporary PDF for the itinerary
+            # Process the itinerary content with improved parsing
             try:
-                itinerary_pdf_buffer = create_markdown_pdf_section(itinerary_content)
+                # Clean and process the markdown content
+                processed_content = clean_markdown_for_pdf(itinerary_content)
                 
-                # Add a note that the itinerary is attached
-                story.append(Paragraph(
-                    "The detailed itinerary has been processed with advanced markdown formatting. "
-                    "Please see the complete itinerary section below with proper bullet points, "
-                    "formatting, and structure.",
-                    normal_style
-                ))
-                story.append(Spacer(1, 10))
+                # Extract sections for better organization
+                sections = extract_and_format_content_sections(processed_content)
                 
-                # For now, also include a simplified version in the main PDF
-                simplified_content = clean_markdown_for_pdf(itinerary_content)
-                lines = simplified_content.split('\n')
-                
-                for line in lines:
-                    line = line.strip()
-                    if not line:
+                # Process each section
+                for section_name, section_content in sections.items():
+                    if not section_content.strip():
                         continue
                     
-                    # Handle headings
-                    if line.startswith('#'):
-                        heading_text = re.sub(r'^#+\s*', '', line)
-                        story.append(Paragraph(heading_text, heading_style))
-                        story.append(Spacer(1, 8))
+                    lines = section_content.split('\n')
                     
-                    # Handle bullet points
-                    elif line.startswith('*') or line.startswith('-') or line.startswith('•'):
-                        bullet_text = re.sub(r'^[\*\-•]\s*', '', line)
-                        bullet_style = ParagraphStyle(
-                            'BulletStyle',
-                            parent=normal_style,
-                            leftIndent=20,
-                            bulletIndent=10,
-                            spaceAfter=4
-                        )
-                        story.append(Paragraph(f"• {bullet_text}", bullet_style))
-                        story.append(Spacer(1, 3))
-                    
-                    # Regular text
-                    else:
-                        story.append(Paragraph(line, normal_style))
-                        story.append(Spacer(1, 6))
+                    for line in lines:
+                        line = line.strip()
+                        if not line:
+                            continue
+                        
+                        # Handle different heading levels
+                        if line.startswith('###'):
+                            heading_text = re.sub(r'^#+\s*', '', line)
+                            # Create a sub-heading style
+                            sub_heading_style = ParagraphStyle(
+                                'SubHeading',
+                                parent=heading_style,
+                                fontSize=14,
+                                spaceAfter=8,
+                                spaceBefore=15,
+                                textColor=colors.HexColor('#2E86AB')
+                            )
+                            story.append(Paragraph(heading_text, sub_heading_style))
+                            story.append(Spacer(1, 6))
+                        
+                        elif line.startswith('##'):
+                            heading_text = re.sub(r'^#+\s*', '', line)
+                            story.append(Paragraph(heading_text, heading_style))
+                            story.append(Spacer(1, 8))
+                        
+                        elif line.startswith('#'):
+                            heading_text = re.sub(r'^#+\s*', '', line)
+                            story.append(Paragraph(heading_text, title_style))
+                            story.append(Spacer(1, 10))
+                        
+                        # Handle bullet points with better formatting
+                        elif line.startswith('*') or line.startswith('-') or line.startswith('•'):
+                            bullet_text = re.sub(r'^[\*\-•]\s*', '', line)
+                            
+                            # Check if this is a time-based bullet point
+                            time_pattern = r'^(\d{1,2}:\d{2}\s*[AP]M)'
+                            time_match = re.match(time_pattern, bullet_text)
+                            
+                            if time_match:
+                                # Special formatting for time-based activities
+                                time_style = ParagraphStyle(
+                                    'TimeStyle',
+                                    parent=normal_style,
+                                    leftIndent=20,
+                                    bulletIndent=10,
+                                    spaceAfter=4,
+                                    fontSize=10,
+                                    textColor=colors.HexColor('#A23B72')
+                                )
+                                story.append(Paragraph(f"• <b>{bullet_text}</b>", time_style))
+                            else:
+                                # Regular bullet point
+                                bullet_style = ParagraphStyle(
+                                    'BulletStyle',
+                                    parent=normal_style,
+                                    leftIndent=20,
+                                    bulletIndent=10,
+                                    spaceAfter=4
+                                )
+                                story.append(Paragraph(f"• {bullet_text}", bullet_style))
+                            story.append(Spacer(1, 3))
+                        
+                        # Handle indented content (sub-bullets)
+                        elif line.startswith('    ') or line.startswith('\t'):
+                            indented_text = line.lstrip()
+                            indented_style = ParagraphStyle(
+                                'IndentedStyle',
+                                parent=normal_style,
+                                leftIndent=40,
+                                spaceAfter=3,
+                                fontSize=10
+                            )
+                            story.append(Paragraph(indented_text, indented_style))
+                            story.append(Spacer(1, 2))
+                        
+                        # Regular text
+                        else:
+                            # Check if line contains links and format accordingly
+                            if '<a href=' in line:
+                                # Line contains links, use normal style to preserve formatting
+                                story.append(Paragraph(line, normal_style))
+                            else:
+                                story.append(Paragraph(line, normal_style))
+                            story.append(Spacer(1, 4))
                         
             except Exception as e:
-                # Fallback to simple text if markdown-pdf fails
-                story.append(Paragraph(f"Error processing markdown: {str(e)}", normal_style))
-                story.append(Paragraph(itinerary_content.replace('\n', '<br/>'), normal_style))
+                # Fallback to simple text if processing fails
+                story.append(Paragraph(f"Error processing itinerary: {str(e)}", normal_style))
+                # Clean fallback content
+                fallback_content = clean_markdown_for_pdf(itinerary_content)
+                story.append(Paragraph(fallback_content.replace('\n', '<br/>'), normal_style))
         else:
             story.append(Paragraph("No detailed itinerary available.", normal_style))
     
@@ -213,48 +268,22 @@ def clean_markdown_for_pdf(text):
     """Clean markdown text for PDF generation"""
     if not text:
         return ""
+     
+    # Convert markdown links to clickable PDF links
+    text = convert_markdown_links_to_pdf(text)
     
     # Remove or convert markdown elements that don't work well in PDF
     text = re.sub(r'\*\*(.*?)\*\*', r'<b>\1</b>', text)  # Bold
     text = re.sub(r'\*(.*?)\*', r'<i>\1</i>', text)      # Italic
     text = re.sub(r'`(.*?)`', r'<font name="Courier">\1</font>', text)  # Code
     
+    # Handle bullet points better
+    text = re.sub(r'^\s*[\*\-\+]\s+', '• ', text, flags=re.MULTILINE)
+    
     # Clean up excessive newlines
     text = re.sub(r'\n{3,}', '\n\n', text)
     
-    # Remove markdown links but keep text
-    text = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', text)
-    
     return text.strip()
-
-def create_markdown_pdf_section(markdown_content):
-    """Create a PDF section using markdown-pdf library for better formatting"""
-    try:
-        # Create a MarkdownPdf instance with optimized settings
-        pdf = MarkdownPdf(toc_level=2, optimize=True)
-        
-        # Set PDF metadata
-        pdf.meta["title"] = "Trip Itinerary"
-        pdf.meta["author"] = "TripSense AI"
-        pdf.meta["subject"] = "Travel Itinerary"
-        
-        # Clean up the markdown content
-        cleaned_content = prepare_markdown_content(markdown_content)
-        
-        # Add the itinerary as a section
-        pdf.add_section(Section(cleaned_content, toc=True))
-        
-        # Save to buffer
-        buffer = io.BytesIO()
-        pdf.save_bytes(buffer)
-        buffer.seek(0)
-        
-        return buffer
-        
-    except Exception as e:
-        # Log the error and return None to trigger fallback
-        print(f"Error creating markdown PDF: {e}")
-        return None
 
 def prepare_markdown_content(content):
     """Prepare markdown content for better PDF rendering"""
@@ -290,3 +319,64 @@ def prepare_markdown_content(content):
     content = content.lstrip('\n')
     
     return content
+
+def convert_markdown_links_to_pdf(text):
+    """Convert markdown links to ReportLab-compatible clickable links"""
+    # Pattern to match markdown links: [text](url)
+    def link_replacer(match):
+        link_text = match.group(1)
+        url = match.group(2)
+        # Create a clickable link in ReportLab format
+        return f'<a href="{url}" color="blue">{link_text}</a>'
+    
+    # Replace markdown links with ReportLab link format
+    text = re.sub(r'\[([^\]]+)\]\(([^\)]+)\)', link_replacer, text)
+    
+    return text
+
+def extract_and_format_content_sections(content):
+    """Extract and format different sections of the content for better PDF layout"""
+    sections = {}
+    current_section = 'main'
+    current_content = []
+    
+    lines = content.split('\n')
+    
+    for line in lines:
+        line = line.strip()
+        
+        # Detect section headers
+        if line.startswith('### ') and any(keyword in line.lower() for keyword in ['flight', 'day', 'practical', 'budget', 'seasonal', 'creative']):
+            # Save previous section
+            if current_content:
+                sections[current_section] = '\n'.join(current_content)
+            
+            # Start new section
+            if 'flight' in line.lower():
+                current_section = 'flights'
+            elif 'day' in line.lower():
+                day_match = re.search(r'day\s+(\d+)', line.lower())
+                if day_match:
+                    current_section = f'day_{day_match.group(1)}'
+                else:
+                    current_section = 'daily_itinerary'
+            elif 'practical' in line.lower():
+                current_section = 'practical_tips'
+            elif 'budget' in line.lower():
+                current_section = 'budget'
+            elif 'seasonal' in line.lower():
+                current_section = 'seasonal'
+            elif 'creative' in line.lower():
+                current_section = 'creative'
+            else:
+                current_section = 'other'
+            
+            current_content = [line]
+        else:
+            current_content.append(line)
+    
+    # Save the last section
+    if current_content:
+        sections[current_section] = '\n'.join(current_content)
+    
+    return sections

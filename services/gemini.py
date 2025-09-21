@@ -13,9 +13,10 @@ from services.prompt_loader import load_system_prompt, render_user_prompt
 from services.logging import initialize_metrics, log_request, estimate_tokens, logger
 
 # Model Constants
-THINKING_BUDGET = 0
-TEMPERATURE= 0.7
-MAX_OUTPUT_TOKENS=2048
+THINKING_BUDGET = 0  # Enable thinking for better reasoning
+TEMPERATURE = 0.2  # Slightly higher for better formatting while maintaining accuracy
+MAX_OUTPUT_TOKENS = 4096  # Increased for detailed responses
+TOP_P = 0.8  # Nucleus sampling for controlled creativity
 model_name = os.getenv("GEMINI_MODEL")
 SYSTEM_INSTRUCTION = load_system_prompt()
 
@@ -55,6 +56,7 @@ class TripSenseAI:
             self.thinking_budget = THINKING_BUDGET
             self.temperature = TEMPERATURE
             self.max_output_tokens = MAX_OUTPUT_TOKENS
+            self.top_p = TOP_P
             self.tools = tools
             self.safety_settings = safety_settings
             
@@ -99,11 +101,11 @@ class TripSenseAI:
                         logger.warning(f"Function {function_name} returned None")
                         return {"error": f"Function {function_name} returned no data"}
                     
-                    # Log result summary for debugging
-                    if isinstance(result, list):
-                        logger.debug(f"Function {function_name} returned {len(result)} items")
-                    elif isinstance(result, dict):
-                        logger.debug(f"Function {function_name} returned dict with keys: {list(result.keys())}")
+                    # Log result summary for debugging (only for complex results)
+                    if isinstance(result, list) and len(result) > 10:
+                        logger.debug(f"Function {function_name} returned large list: {len(result)} items")
+                    elif isinstance(result, dict) and len(result) > 5:
+                        logger.debug(f"Function {function_name} returned large dict with keys: {list(result.keys())}")
                     
                     return result
                 else:
@@ -146,12 +148,13 @@ class TripSenseAI:
         return "\n".join(context_parts)
 
     def _create_generation_config(self, use_tools=True):
-        """Create a standard generation config for API calls."""
+        """Create a standard generation config for API calls with anti-hallucination settings."""
         config = types.GenerateContentConfig(
             thinking_config=types.ThinkingConfig(thinking_budget=self.thinking_budget),
             system_instruction=self.system_instruction,
             temperature=self.temperature,
             max_output_tokens=self.max_output_tokens,
+            top_p=self.top_p,
             safety_settings=self.safety_settings,
         )
         
@@ -173,8 +176,7 @@ class TripSenseAI:
                 if hasattr(part, 'function_call') and part.function_call:
                     has_function_calls = True
                     function_call = part.function_call
-                    logger.info(f"Found function call {i+1}: {function_call.name}")
-                    logger.debug(f"Function arguments: {function_call.args}")
+                    logger.debug(f"Found function call {i+1}: {function_call.name} with args: {function_call.args}")
                     
                     # Execute the function call
                     function_result = self._execute_function_call(function_call)
@@ -185,7 +187,6 @@ class TripSenseAI:
                     })
                 elif hasattr(part, 'text') and part.text:
                     text_parts.append(part.text)
-                    logger.debug(f"Found text part {i+1}: {len(part.text)} characters")
         
         logger.info(f"Response analysis: {len(function_calls)} function calls, {len(text_parts)} text parts")
         
