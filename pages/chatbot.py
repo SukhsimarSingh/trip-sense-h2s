@@ -47,10 +47,15 @@ def initialize_chatbot_session():
     if init_key not in st.session_state:
         # Initialize all required session state variables
         st.session_state.chatbot_initialized = True
-        st.session_state.trip_data = st.session_state.get('trip_data', {})
-        st.session_state.initial_prompt = st.session_state.get('initial_prompt', None)
-        st.session_state.initial_prompt_processed = st.session_state.get('initial_prompt_processed', False)
-        st.session_state.main_trip_itinerary = st.session_state.get('main_trip_itinerary', None)
+        # Initialize session state variables if not present (more efficient than .get())
+        if 'trip_data' not in st.session_state:
+            st.session_state.trip_data = {}
+        if 'initial_prompt' not in st.session_state:
+            st.session_state.initial_prompt = None
+        if 'initial_prompt_processed' not in st.session_state:
+            st.session_state.initial_prompt_processed = False
+        if 'main_trip_itinerary' not in st.session_state:
+            st.session_state.main_trip_itinerary = None
         
         # Initialize messages only if not already present
         if "messages" not in st.session_state:
@@ -142,150 +147,157 @@ st.markdown(f"""<p style="text-align: center; margin: 0.5rem 0 0 0; opacity: 0.9
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-with st.container(border=True):
-    # Process initial prompt only once
-    if (initial_prompt and trip_data and not st.session_state.initial_prompt_processed):
-        
-        logger.info(f"Processing initial prompt for trip to {trip_data.get('destination', 'Unknown')}")
-        logger.debug(f"Initial prompt length: {len(initial_prompt)} characters")
-        
-        # Add Initial prompt in the messages in the session
-        st.session_state.messages.append({"role": "user", "content": initial_prompt})
-        
-        # Mark as processed to prevent duplicates
-        st.session_state.initial_prompt_processed = True
+with st.container(border=True, horizontal_alignment="center"):
 
-        with st.spinner("Creating your personalized itinerary..."):
-            try:
-                model_response = TripSenseAI().generate_initial_plan(trip_data)
-                
-                # Validate response
-                if model_response and len(model_response.strip()) > 10:  # Ensure meaningful response
-                    st.session_state.messages.append({"role": "assistant", "content": model_response})
-                    # Store this as the main trip itinerary (not follow-up responses)
-                    st.session_state.main_trip_itinerary = model_response
-                    logger.info(f"Initial plan response added to messages ({len(model_response)} characters)")
-                    logger.info("Stored as main trip itinerary for saving")
-                    # Force rerun to display the initial response (only if not already rerunning)
-                    if not st.session_state.get('rerunning', False):
-                        st.session_state.rerunning = True
-                        st.rerun()
-                else:
-                    logger.warning(f"Invalid or empty response from initial plan generation: '{model_response}'")
-                    error_msg = "I'm having trouble generating your trip plan right now. Please try refreshing the page or contact support."
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        # Process initial prompt only once
+        if (initial_prompt and trip_data and not st.session_state.initial_prompt_processed):
+            
+            logger.info(f"Processing initial prompt for trip to {trip_data.get('destination', 'Unknown')}")
+            logger.debug(f"Initial prompt length: {len(initial_prompt)} characters")
+            
+            # Add Initial prompt in the messages in the session
+            st.session_state.messages.append({"role": "user", "content": initial_prompt})
+            
+            # Mark as processed to prevent duplicates
+            st.session_state.initial_prompt_processed = True
+
+            with st.spinner("Creating your personalized itinerary..."):
+                try:
+                    model_response = TripSenseAI().generate_initial_plan(trip_data)
+                    
+                    # Validate response
+                    if model_response and len(model_response.strip()) > 10:  # Ensure meaningful response
+                        st.session_state.messages.append({"role": "assistant", "content": model_response})
+                        # Store this as the main trip itinerary (not follow-up responses)
+                        st.session_state.main_trip_itinerary = model_response
+                        logger.info(f"Initial plan response added to messages ({len(model_response)} characters)")
+                        logger.info("Stored as main trip itinerary for saving")
+                        # Force rerun to display the initial response (only if not already rerunning)
+                        if not st.session_state.get('rerunning', False):
+                            st.session_state.rerunning = True
+                            st.rerun()
+                    else:
+                        logger.warning(f"Invalid or empty response from initial plan generation: '{model_response}'")
+                        error_msg = "I'm having trouble generating your trip plan right now. Please try refreshing the page or contact support."
+                        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                        st.error("Failed to generate trip plan. Please try again.")
+                        
+                except Exception as e:
+                    logger.error(f"Exception in initial plan generation: {e}")
+                    error_msg = "I encountered an error while generating your trip plan. Please try again."
                     st.session_state.messages.append({"role": "assistant", "content": error_msg})
-                    st.error("Failed to generate trip plan. Please try again.")
-                    
-            except Exception as e:
-                logger.error(f"Exception in initial plan generation: {e}")
-                error_msg = "I encountered an error while generating your trip plan. Please try again."
-                st.session_state.messages.append({"role": "assistant", "content": error_msg})
-                st.error("An error occurred. Please try again.")
+                    st.error("An error occurred. Please try again.")
 
-    # Chat interface
-    render_chat()
-    
-    # Add chat input for user interaction
-    if prompt := st.chat_input("Ask me anything about your trip..."):
-        logger.debug(f"User sent message: '{prompt[:50]}{'...' if len(prompt) > 50 else ''}'")
+        # Chat interface
+        render_chat()
         
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        
-        # Generate AI response
-        with st.spinner("Thinking..."):
-            try:
-                response = TripSenseAI().chat_response(st.session_state.messages, prompt)
-                
-                # Validate response
-                if response and len(response.strip()) > 5:  # Ensure meaningful response
-                    st.session_state.messages.append({"role": "assistant", "content": response})
-                    logger.debug(f"AI response generated ({len(response)} chars)")
-                else:
-                    logger.warning(f"Invalid or empty chat response")
-                    error_msg = "I'm having trouble responding right now. Could you please rephrase your question?"
+        # Add chat input for user interaction
+        if prompt := st.chat_input("Ask me anything about your trip..."):
+            logger.debug(f"User sent message: '{prompt[:50]}{'...' if len(prompt) > 50 else ''}'")
+            
+            # Add user message to chat history
+            st.session_state.messages.append({"role": "user", "content": prompt})
+            
+            # Generate AI response
+            with st.spinner("Thinking..."):
+                try:
+                    response = TripSenseAI().chat_response(st.session_state.messages, prompt)
+                    
+                    # Validate response
+                    if response and len(response.strip()) > 5:  # Ensure meaningful response
+                        st.session_state.messages.append({"role": "assistant", "content": response})
+                        logger.debug(f"AI response generated ({len(response)} chars)")
+                    else:
+                        logger.warning(f"Invalid or empty chat response")
+                        error_msg = "I'm having trouble responding right now. Could you please rephrase your question?"
+                        st.session_state.messages.append({"role": "assistant", "content": error_msg})
+                        
+                except Exception as e:
+                    logger.error(f"Exception in chat response generation: {e}")
+                    error_msg = "I encountered an error processing your message. Please try again."
                     st.session_state.messages.append({"role": "assistant", "content": error_msg})
-                    
-            except Exception as e:
-                logger.error(f"Exception in chat response generation: {e}")
-                error_msg = "I encountered an error processing your message. Please try again."
-                st.session_state.messages.append({"role": "assistant", "content": error_msg})
-        
-        # Rerun to display the new messages (only if not already rerunning)
-        if not st.session_state.get('rerunning', False):
-            st.session_state.rerunning = True
-            st.rerun()
+            
+            # Rerun to display the new messages (only if not already rerunning)
+            if not st.session_state.get('rerunning', False):
+                st.session_state.rerunning = True
+                st.rerun()
 
+    with col2:
+        # st.map(trip_data)
+        pass
 
-# Navigation buttons
-with st.container(horizontal_alignment="center", horizontal=True):
-    if st.button("Back to Form", key="back_to_form"):
-        cleanup_chatbot_session()
-        st.switch_page("pages/form.py")
+    # Navigation buttons
+    with st.container(horizontal_alignment="center", horizontal=True):
+        if st.button("Back to Form", key="back_to_form"):
+            cleanup_chatbot_session()
+            st.switch_page("pages/form.py")
 
-    if st.button("Home", key="back_to_home"):
-        cleanup_chatbot_session()
-        st.switch_page("app.py")
+        if st.button("Home", key="back_to_home"):
+            cleanup_chatbot_session()
+            st.switch_page("app.py")
 
-    if st.button("Save Trip", key="save_trip"):
-        try:
-            # Validate that we have trip data
-            if not st.session_state.get('trip_data'):
-                st.error("No trip data to save. Please create a trip plan first.")
-            else:
-                # Get the main trip itinerary (not the latest chat response)
-                main_itinerary = st.session_state.get('main_trip_itinerary')
-                
-                if main_itinerary:
-                    # Use the stored main itinerary
-                    trip_itinerary = main_itinerary
-                    logger.info("Using stored main trip itinerary for saving")
+        if st.button("Save Trip", key="save_trip"):
+            try:
+                # Validate that we have trip data
+                if not st.session_state.get('trip_data'):
+                    st.error("No trip data to save. Please create a trip plan first.")
                 else:
-                    # Fallback: try to find the first substantial AI response (likely the trip plan)
-                    messages = st.session_state.get('messages', [])
-                    ai_responses = [msg['content'] for msg in messages if msg['role'] == 'assistant']
+                    # Get the main trip itinerary (not the latest chat response)
+                    main_itinerary = st.session_state.get('main_trip_itinerary')
                     
-                    # Filter out short responses (likely not the main itinerary)
-                    substantial_responses = [resp for resp in ai_responses if len(resp.strip()) > 200]
-                    trip_itinerary = substantial_responses[0] if substantial_responses else (ai_responses[0] if ai_responses else "No detailed itinerary available.")
-                    logger.warning("No stored main itinerary found, using fallback method")
-                
-                # Create a default trip name if not provided
-                destination = st.session_state.trip_data.get('destination', 'Unknown Destination')
-                default_trip_name = f"Trip to {destination}"
-                
-                # Structure the trip data properly
-                structured_trip_data = {
-                    "trip_name": default_trip_name,
-                    "trip_summary": f"Trip to {destination} planned with AI assistant",
-                    "form_data": st.session_state.trip_data.copy(),
-                    "itinerary": {
-                        "ai_response": trip_itinerary,
-                        "demo_mode": False,
-                        "generated_at": datetime.now().isoformat()
+                    if main_itinerary:
+                        # Use the stored main itinerary
+                        trip_itinerary = main_itinerary
+                        logger.info("Using stored main trip itinerary for saving")
+                    else:
+                        # Fallback: try to find the first substantial AI response (likely the trip plan)
+                        messages = st.session_state.get('messages', [])
+                        ai_responses = [msg['content'] for msg in messages if msg['role'] == 'assistant']
+                        
+                        # Filter out short responses (likely not the main itinerary)
+                        substantial_responses = [resp for resp in ai_responses if len(resp.strip()) > 200]
+                        trip_itinerary = substantial_responses[0] if substantial_responses else (ai_responses[0] if ai_responses else "No detailed itinerary available.")
+                        logger.warning("No stored main itinerary found, using fallback method")
+                    
+                    # Create a default trip name if not provided
+                    destination = st.session_state.trip_data.get('destination', 'Unknown Destination')
+                    default_trip_name = f"Trip to {destination}"
+                    
+                    # Structure the trip data properly
+                    structured_trip_data = {
+                        "trip_name": default_trip_name,
+                        "trip_summary": f"Trip to {destination} planned with AI assistant",
+                        "form_data": st.session_state.trip_data.copy(),
+                        "itinerary": {
+                            "ai_response": trip_itinerary,
+                            "demo_mode": False,
+                            "generated_at": datetime.now().isoformat()
+                        }
                     }
-                }
-                
-                # Save the trip
-                trip_id = trip_storage.save_trip(structured_trip_data)
-                st.success(f"Trip saved successfully! Trip ID: {trip_id}")
-                logger.info(f"Trip saved with ID: {trip_id}")
-                
-                # Clear session state after successful save
-                cleanup_chatbot_session()
-                # Also clear trip-related data
-                keys_to_clear = ["trip_data", "initial_prompt", "form_data", "main_trip_itinerary"]
-                for key in keys_to_clear:
-                    if key in st.session_state:
-                        del st.session_state[key]
-                
-                # Navigate to saved trips page
-                st.switch_page("pages/trips.py")
-                
-        except Exception as e:
-            st.error(f"Failed to save trip: {str(e)}")
-            logger.error(f"Manual trip save failed: {e}")
-            st.rerun()
+                    
+                    # Save the trip
+                    trip_id = trip_storage.save_trip(structured_trip_data)
+                    st.success(f"Trip saved successfully! Trip ID: {trip_id}")
+                    logger.info(f"Trip saved with ID: {trip_id}")
+                    
+                    # Clear session state after successful save
+                    cleanup_chatbot_session()
+                    # Also clear trip-related data
+                    keys_to_clear = ["trip_data", "initial_prompt", "form_data", "main_trip_itinerary"]
+                    for key in keys_to_clear:
+                        if key in st.session_state:
+                            del st.session_state[key]
+                    
+                    # Navigate to saved trips page
+                    st.switch_page("pages/trips.py")
+                    
+            except Exception as e:
+                st.error(f"Failed to save trip: {str(e)}")
+                logger.error(f"Manual trip save failed: {e}")
+                st.rerun()
 
-    if st.button("Saved Trips", key="saved_trips"):
-        st.switch_page("pages/trips.py")
+        if st.button("Saved Trips", key="saved_trips"):
+            st.switch_page("pages/trips.py")

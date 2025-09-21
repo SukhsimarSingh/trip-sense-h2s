@@ -27,12 +27,12 @@ def show_trip_modal(trip_id):
     trip_name = trip_data.get('trip_name', 'Untitled Trip')
     origin = form_data.get('origin', 'Unknown Origin')
     destination = form_data.get('destination', 'Unknown Destination')
-    st.markdown(f"### 🗺️ {trip_name}")
-    st.markdown(f"**🛫 From:** {origin}")
-    st.markdown(f"**📍 To:** {destination}")
+    st.markdown(f"### :material/map: {trip_name}")
+    st.markdown(f"**From:** {origin}")
+    st.markdown(f"**To:** {destination}")
     
     # Create tabs for better organization
-    tab1, tab2 = st.tabs(["📋 Overview", "🗓️ Itinerary"])
+    tab1, tab2 = st.tabs([":material/view_list: Overview", ":material/calendar_month: Itinerary"])
     
     with tab1:
         # Trip overview in two columns
@@ -41,28 +41,28 @@ def show_trip_modal(trip_id):
         with col1:
             start_date = form_data.get('start_date', 'N/A')
             end_date = form_data.get('end_date', 'N/A')
-            st.write(f"**🗓️ Travel Dates:** {start_date} to {end_date}")
+            st.write(f"**Travel Dates:** {start_date} to {end_date}")
 
-            st.write(f"**👥 Group Details:** {form_data.get('group_size', 'N/A')} people")
-            st.write(f"**🎯 Type:** {form_data.get('travel_type', 'N/A')}")
+            st.write(f"**Group Details:** {form_data.get('group_size', 'N/A')} people")
+            st.write(f"**Type:** {form_data.get('travel_type', 'N/A')}")
             
-            st.write(f"**💰 Budget:** {form_data.get('budget', 'N/A')}")
-            st.write(f"**🏨 Stay:** {form_data.get('accommodation', 'N/A')}")
+            st.write(f"**Budget:** {form_data.get('budget', 'N/A')}")
+            st.write(f"**Stay:** {form_data.get('accommodation', 'N/A')}")
         
         with col2:
-            st.write(f"**🌍 Season:** {form_data.get('season', 'N/A')}")
+            st.write(f"**Season:** {form_data.get('season', 'N/A')}")
             if isinstance(form_data.get('travel_months', 'N/A'), list):
                 travel_months = ', '.join(form_data.get('travel_months', 'N/A'))
-            st.write(f"**🗓️ Months:** {travel_months}")
+            st.write(f"**Months:** {travel_months}")
 
-            st.write(f"**🗓️ Duration:** {form_data.get('duration', 'N/A')} days")
+            st.write(f"**Duration:** {form_data.get('duration', 'N/A')} days")
             
-            st.write(f"**📝 Trip Summary:** {trip_data.get('trip_summary', 'No summary provided')}")
+            st.write(f"**Trip Summary:** {trip_data.get('trip_summary', 'No summary provided')}")
             
             # Special requests if any
             special_requests = form_data.get('special_requests', '').strip()
             if special_requests:
-                st.write(f"**✨ Special Requests:** {special_requests}")
+                st.write(f"**Special Requests:** {special_requests}")
 
     with tab2:
         # Show itinerary
@@ -84,7 +84,7 @@ def show_trip_modal(trip_id):
     col1, col2, col3, col4, col5 = st.columns([1, 1, 1, 1, 1])
     
     with col1:
-        if st.button("🔄 Recreate Trip", use_container_width=True):
+        if st.button(":material/refresh: Recreate Trip", use_container_width=True):
             # Set up session state to recreate this trip
             st.session_state.trip_data = form_data.copy()
             st.session_state.initial_prompt = None  # Will be regenerated
@@ -93,7 +93,7 @@ def show_trip_modal(trip_id):
             st.switch_page("pages/chatbot.py")
     
     with col2:
-        if st.button("📝 Edit Trip", use_container_width=True):
+        if st.button(":material/edit: Edit Trip", use_container_width=True):
             # Pre-populate form with existing data
             st.session_state.form_data = form_data.copy()
             st.session_state.show_trip_modal = False
@@ -104,19 +104,41 @@ def show_trip_modal(trip_id):
         # PDF Download/Generate button
         pdf_key = f"pdf_ready_{trip_id}"
         
-        # Check if PDF is already generated for this trip
+        # Check if PDF is already generated for this trip and data is valid
+        pdf_data_valid = False
         if st.session_state.get(pdf_key):
+            try:
+                # Verify the PDF data is still accessible and valid
+                pdf_info = st.session_state[pdf_key]
+                if pdf_info.get('data') and len(pdf_info['data']) > 0:
+                    pdf_data_valid = True
+            except (KeyError, TypeError, AttributeError):
+                # Clean up corrupted PDF data
+                st.session_state.pop(pdf_key, None)
+                pdf_data_valid = False
+        
+        if pdf_data_valid:
             # Show download button for ready PDF
-            st.download_button(
-                label="📄 Download PDF",
-                data=st.session_state[pdf_key]['data'],
-                file_name=st.session_state[pdf_key]['filename'],
-                mime="application/pdf",
-                use_container_width=True
-            )
-        else:
+            try:
+                st.download_button(
+                    label=":material/download: Download PDF",
+                    data=st.session_state[pdf_key]['data'],
+                    file_name=st.session_state[pdf_key]['filename'],
+                    mime="application/pdf",
+                    type="primary",
+                    use_container_width=True,
+                    key=f"download_pdf_{trip_id}"  # Unique key to prevent conflicts
+                )
+            except Exception as e:
+                # If download fails, clear the corrupted data and show generate button
+                logger.warning(f"PDF download failed for trip {trip_id}: {e}")
+                st.session_state.pop(pdf_key, None)
+                st.error("PDF file is no longer available. Please generate a new one.")
+                pdf_data_valid = False
+        
+        if not pdf_data_valid:
             # Show generate button
-            if st.button("📄 Generate PDF", use_container_width=True):
+            if st.button(":material/download: Generate PDF", use_container_width=True, key=f"generate_pdf_{trip_id}"):
                 try:
                     with st.spinner("Generating PDF..."):
                         logger.info(f"Starting PDF generation for trip: {trip_name} (ID: {trip_id})")
@@ -135,10 +157,11 @@ def show_trip_modal(trip_id):
                         if len(pdf_data) == 0:
                             raise Exception("Generated PDF is empty")
                         
-                        # Store PDF data in session state
+                        # Store PDF data in session state with validation
                         st.session_state[pdf_key] = {
                             'data': pdf_data,
-                            'filename': filename
+                            'filename': filename,
+                            'generated_at': datetime.now().isoformat()  # Add timestamp for debugging
                         }
                         
                         logger.info(f"PDF generated successfully: {filename} ({len(pdf_data)} bytes)")
@@ -146,13 +169,15 @@ def show_trip_modal(trip_id):
                         st.rerun()
                         
                 except Exception as e:
-                    logger.error(f"Error generating PDF: {e}")
-                    st.error("Unable to generate PDF. Please try again later.")
+                    logger.error(f"Error generating PDF for trip {trip_id}: {e}")
+                    st.error(f"Unable to generate PDF: {str(e)}")
+                    # Clear any partial data
+                    st.session_state.pop(pdf_key, None)
     
     with col4:
         # Generate New button (only show if PDF is ready)
         if st.session_state.get(pdf_key):
-            if st.button("🔄 Generate New", use_container_width=True, key=f"regenerate_{trip_id}"):
+            if st.button(":material/refresh: Generate New", use_container_width=True, key=f"regenerate_{trip_id}"):
                 st.session_state.pop(pdf_key, None)
                 st.rerun()
         else:
@@ -160,7 +185,7 @@ def show_trip_modal(trip_id):
             st.write("")
     
     with col5:
-        if st.button("❌ Close", use_container_width=True):
+        if st.button(":material/close: Close", use_container_width=True):
             st.session_state.show_trip_modal = False
             st.session_state.selected_trip_id = None
             # Clean up any PDF data for this trip to prevent memory leaks
@@ -171,32 +196,39 @@ def show_trip_modal(trip_id):
 # Initialize session state for trips page
 def initialize_trips_session():
     """Initialize trips page session state and prevent unwanted regeneration"""
+    # Clean up any stale PDF data that might cause media file errors
+    cleanup_stale_pdf_data()
+
+def cleanup_stale_pdf_data():
+    """Clean up stale PDF data from session state to prevent media file errors"""
+    try:
+        # Find all PDF keys in session state
+        pdf_keys_to_remove = []
+        for key in st.session_state.keys():
+            if key.startswith('pdf_ready_'):
+                try:
+                    # Try to access the PDF data to see if it's still valid
+                    pdf_info = st.session_state[key]
+                    if not pdf_info.get('data') or len(pdf_info['data']) == 0:
+                        pdf_keys_to_remove.append(key)
+                except (KeyError, TypeError, AttributeError):
+                    pdf_keys_to_remove.append(key)
+        
+        # Remove stale PDF data
+        for key in pdf_keys_to_remove:
+            st.session_state.pop(key, None)
+            logger.info(f"Cleaned up stale PDF data: {key}")
+            
+    except Exception as e:
+        logger.warning(f"Error during PDF cleanup: {e}")
     # Only initialize once per session to prevent duplicate operations
     if st.session_state.get('trips_page_initialized'):
         return
     
-    # Only clear data if we're actually navigating to trips page (not on rerun)
-    previous_page = st.session_state.get('current_page', '')
-    is_page_navigation = previous_page != "trips"
-    
-    # Clear only UI-specific flags, preserve all trip data
-    ui_keys = ["chatbot_initialized", "chatbot_session_fully_initialized"]
-    cleared_keys = []
-    
-    for key in ui_keys:
-        if key in st.session_state:
-            del st.session_state[key]
-            cleared_keys.append(key)
-    
-    # Only clean up PDF data on actual page navigation, not on rerun
-    if is_page_navigation:
-        pdf_keys_to_remove = [key for key in st.session_state.keys() if key.startswith('pdf_ready_')]
-        for key in pdf_keys_to_remove:
-            del st.session_state[key]
-            cleared_keys.append(key)
-        
-        if cleared_keys:
-            logger.debug(f"Trips page navigation: Cleared UI keys: {cleared_keys}")
+    # Clear UI-specific flags on page navigation (preserve trip data)
+    ui_keys_to_clear = ["chatbot_initialized", "chatbot_session_fully_initialized"]
+    for key in ui_keys_to_clear:
+        st.session_state.pop(key, None)
     
     # Set trips page as active and mark as initialized
     st.session_state.current_page = "trips"
@@ -221,7 +253,7 @@ try:
     
     if not saved_trips:
         st.info("No saved trips yet. Create a trip and save it to see it here!")
-        st.info("Use the **📝 Plan Trip** button in the sidebar to start planning.")
+        st.info("Use the **Plan Trip** button on top to start planning.")
         
         # Add helpful button for new trip planning
         with st.container(horizontal_alignment="center", horizontal=True):
@@ -238,12 +270,12 @@ try:
                 with col1:
                     trip_name = trip.get('trip_name', 'Untitled Trip')
                     st.subheader(f"{trip_name}")
-                    st.write(f"**🛫 From:** {trip.get('origin', 'Unknown')}")
-                    st.write(f"**📍 To:** {trip.get('destination', 'Unknown')}")
-                    st.write(f"**📅 Duration:** {trip.get('start_date', 'N/A')} to {trip.get('end_date', 'N/A')}")
-                    st.write(f"**🎯 Type:** {trip.get('travel_type', 'N/A')}")
+                    st.write(f"**:material/map: From:** {trip.get('origin', 'Unknown')}")
+                    st.write(f"**:material/pin_drop: To:** {trip.get('destination', 'Unknown')}")
+                    st.write(f"**:material/calendar_month: Duration:** {trip.get('start_date', 'N/A')} to {trip.get('end_date', 'N/A')}")
+                    st.write(f"**:material/travel_explore: Type:** {trip.get('travel_type', 'N/A')}")
                     if trip.get('trip_summary'):
-                        st.write(f"**📝 Summary:** {trip.get('trip_summary')}")
+                        st.write(f"**:material/description: Summary:** {trip.get('trip_summary')}")
                 
                 with col2:
                     created_date = trip.get('created_at', '')
@@ -258,12 +290,12 @@ try:
                     st.write(f"**Trip ID:** {trip.get('trip_id', 'N/A')}")
                 
                 with col3:
-                    if st.button("📖 View Details", key=f"view_{trip.get('trip_id')}"):
+                    if st.button(":material/view_list: View Details", key=f"view_{trip.get('trip_id')}"):
                         st.session_state.selected_trip_id = trip.get('trip_id')
                         st.session_state.show_trip_modal = True
                         st.rerun()
                     
-                    if st.button("🗑️ Delete", key=f"delete_{trip.get('trip_id')}"):
+                    if st.button(":material/delete: Delete", key=f"delete_{trip.get('trip_id')}"):
                         if trip_storage.delete_trip(trip.get('trip_id')):
                             st.success("Trip deleted!")
                             st.rerun()

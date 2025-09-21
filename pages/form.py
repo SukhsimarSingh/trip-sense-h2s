@@ -53,7 +53,7 @@ with st.container(horizontal_alignment="center"):
             st.markdown("<h5> Basic Info</h5>", unsafe_allow_html=True)
             # Origin
             origin = st.text_input(
-                "🛫 From where?",
+                ":material/flight_takeoff: From where?",
                 value=form_data.get('origin', ''),
                 placeholder="e.g., Paris, Tokyo",
                 help="Enter your origin city, country, or region"
@@ -62,7 +62,7 @@ with st.container(horizontal_alignment="center"):
             st.markdown("<br>", unsafe_allow_html=True)
 
             destination = st.text_input(
-                "📍 To where?",
+                ":material/pin_drop: To where?",
                 value=form_data.get('destination', ''),
                 placeholder="e.g., New York, England",
                 help="Enter your desired destination city, country, or region"
@@ -84,7 +84,7 @@ with st.container(horizontal_alignment="center"):
                     pass  # Use default dates if parsing fails
 
             date_range = st.date_input(
-                "📅 When are you going?",
+                ":material/calendar_month: When are you going?",
                 (default_start, default_end),
                 format="DD.MM.YYYY",
                 help="Select the dates for your trip",
@@ -114,7 +114,7 @@ with st.container(horizontal_alignment="center"):
 
             with col1:
                 group_size = st.number_input(
-                    "👥 Number of travelers",
+                    ":material/group: Number of travelers",
                     min_value=1,
                     max_value=100,
                     value=form_data.get('group_size', 2),
@@ -128,7 +128,7 @@ with st.container(horizontal_alignment="center"):
                     budget_index = budget_options.index(form_data.get('budget'))
                 
                 budget = st.selectbox(
-                    "💰 What's your budget?",
+                    ":material/attach_money: What's your budget?",
                     options=budget_options,
                     index=budget_index,
                     help="Select your preferred budget range for the trip"
@@ -152,7 +152,7 @@ with st.container(horizontal_alignment="center"):
                 travel_type_index = travel_type_options.index(form_data.get('travel_type'))
             
             travel_type = st.selectbox(
-                "🎯 What type of experience are you looking for?",
+                ":material/travel_explore: What type of experience are you looking for?",
                 options=travel_type_options,
                 index=travel_type_index,
                 help="Choose the type of activities you're most interested in"
@@ -168,7 +168,7 @@ with st.container(horizontal_alignment="center"):
                 accommodation_index = accommodation_options.index(form_data.get('accommodation'))
         
             accommodation = st.selectbox(
-                "🏨 Preferred accommodation",
+                ":material/hotel: Preferred accommodation",
                 options=accommodation_options,
                 index=accommodation_index,
                 help="What type of accommodation do you prefer?"
@@ -177,7 +177,7 @@ with st.container(horizontal_alignment="center"):
             st.markdown("<br>", unsafe_allow_html=True)
 
             special_requests = st.text_area(
-                "📝 Any special requests or interests?",
+                ":material/description: Any special requests or interests?",
                 value=form_data.get('special_requests', ''),
                 placeholder="e.g., vegetarian food options, accessibility needs, specific attractions to visit...",
                 help="Tell us about any specific requirements or interests"
@@ -247,8 +247,8 @@ with st.container(horizontal_alignment="center"):
                         st.session_state.initial_prompt = initial_prompt
                         
                         # Show success message and navigate to chatbot
-                        st.success("🎉 Trip plan generated! Redirecting to your AI assistant...")
-                        st.info("💡 Your AI assistant will help you refine and customize your itinerary.")
+                        st.success(":material/celebration: Trip plan generated! Redirecting to your AI assistant...")
+                        st.info(":material/lightbulb: Your AI assistant will help you refine and customize your itinerary.")
                         
                         # Navigate to chatbot page
                         st.switch_page("pages/chatbot.py")
