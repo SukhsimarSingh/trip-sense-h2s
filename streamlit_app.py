@@ -1,6 +1,4 @@
 import streamlit as st
-# Display session state for debugging
-# st.write(st.session_state)
 
 # Navigation
 landing = st.Page("pages/landing.py", title="Home", icon=":material/home:", default=True)
