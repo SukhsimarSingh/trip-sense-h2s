@@ -55,12 +55,27 @@ An intelligent travel planning application powered by Google's Gemini AI that cr
    ```
 
 4. **Set up environment variables**
+   
+   **For Local Development:**
    Create a `.env` file in the root directory:
    ```env
    GEMINI_API_KEY=your_gemini_api_key_here
    GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
-   GEMINI_MODEL=gemini-2.0-flash
+   GEMINI_MODEL=gemini-2.5-flash
    ```
+   
+   **For Streamlit Cloud Deployment:**
+   Add these as secrets in your Streamlit Cloud dashboard:
+   - Go to your app settings → Secrets
+   - Add the same variables in TOML format:
+   ```toml
+   GEMINI_API_KEY = "your_gemini_api_key_here"
+   GOOGLE_MAPS_API_KEY = "your_google_maps_api_key_here"
+   ```
+   
+   **Get Your API Keys:**
+   - **Gemini API Key**: [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - **Google Maps API Key**: [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
 
 5. **Enable Google APIs**
    In your Google Cloud Console, enable:

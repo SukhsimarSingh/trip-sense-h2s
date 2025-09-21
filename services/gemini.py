@@ -35,10 +35,19 @@ safety_settings = [
 def get_gemini_client():
     """Initialize and cache the Gemini client to avoid recreating on every page load."""
     try:
-        try:
-            api_key = os.getenv("GEMINI_API_KEY")
-        except:
-            api_key = st.secrets["GEMINI_API_KEY"]
+        # Try environment variable first (for local deployment)
+        api_key = st.secrets["GEMINI_API_KEY"]
+           
+        # If not found in environment, try Streamlit secrets (for cloud deployment)
+        if not api_key:
+            try:
+                api_key = os.getenv("GEMINI_API_KEY")
+            except (KeyError, FileNotFoundError):
+                raise ValueError("GEMINI_API_KEY not found in environment variables or Streamlit secrets. Please set your API key.")
+        
+        if not api_key or api_key.strip() == "":
+            raise ValueError("GEMINI_API_KEY is empty. Please provide a valid API key.")
+            
         client = genai.Client(api_key=api_key)
         logger.info("Gemini client initialized and cached")
         return client
