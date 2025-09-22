@@ -2,6 +2,42 @@
 
 An intelligent travel planning application powered by Google's Gemini AI that creates personalized itineraries using real-time data from Google Maps, Places, and Weather APIs. Built with Streamlit for a modern, interactive web interface.
 
+![TripSense Gif](documents/landing-gif.gif)
+
+## Table of Contents
+
+- [Features](#features)
+  - [AI-Powered Planning](#ai-powered-planning)
+  - [Travel Personalization](#travel-personalization)
+  - [Smart Features](#smart-features)
+- [Quick Start](#quick-start)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Architecture](#architecture)
+  - [Project Structure](#project-structure)
+- [Application Workflow](#application-workflow)
+  - [User Journey](#user-journey)
+  - [Data Flow](#data-flow)
+  - [User Flow Diagram](#user-flow-diagram)
+  - [Application Flow Diagram](#application-flow-diagram)
+  - [Architecture Diagram](#architecture-diagram)
+- [Technology Stack](#technology-stack)
+  - [Core Technologies](#core-technologies)
+  - [Key Dependencies](#key-dependencies)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+  - [Model Configuration](#model-configuration)
+  - [Key Components](#key-components)
+- [Troubleshooting](#troubleshooting)
+  - [Common Issues](#common-issues)
+  - [Debug Mode](#debug-mode)
+- [Security Considerations](#security-considerations)
+  - [API Key Security](#api-key-security)
+- [Contributing](#contributing)
+  - [Development Setup](#development-setup)
+  - [Code Style](#code-style)
+- [License](#license)
+
 ## Features
 
 ### AI-Powered Planning
@@ -99,6 +135,7 @@ trip-sense-h2s/
 │   ├── Trip-to-Bangaladesh*.pdf
 │   └── A-Whirlwind-Day-in-the-Big-Apple*.pdf
 ├── documents/                 # Project documentation and diagrams
+│   ├── landing-gif.gif            # Landing gif
 │   ├── TripSenseUserFlow.png      # User flow diagram
 │   ├── TripSenseArchitecture.png  # Architecture diagram
 │   ├── TripSenseAppFlow.png       # Application flow diagram
@@ -123,6 +160,8 @@ trip-sense-h2s/
 │   ├── prompt_loader.py         # Jinja2 template management
 │   ├── tools.py                 # Google API functions (Places, Weather, Maps)
 │   └── trip_storage.py          # Session-based trip storage
+├── static/                    # Font folder
+│   └── Inter_24pt-Regular.ttf   # Inter font files
 ├── styles/                    # UI styling and themes
 │   └── styles.py                # Streamlit custom styles
 ├── tests/                     # Unit Tests
