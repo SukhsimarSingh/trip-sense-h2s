@@ -17,7 +17,7 @@ THINKING_BUDGET = 0  # Enable thinking for better reasoning
 TEMPERATURE = 0.2  # Slightly higher for better formatting while maintaining accuracy
 MAX_OUTPUT_TOKENS = 2048  # Increased for detailed responses
 TOP_P = 0.8  # Nucleus sampling for controlled creativity
-model_name = "gemini-2.5-flash"
+model_name = "gemini-2.5-flash-lite"
 SYSTEM_INSTRUCTION = load_system_prompt()
 
 safety_settings = [
