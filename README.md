@@ -199,8 +199,10 @@ trip-sense-h2s/
 ### Model Configuration
 The application is configured to use:
 - **Model**: gemini-2.5-flash-lite
-- **Temperature**: 0.7 for balanced creativity and accuracy
+- **Temperature**: 0.2 For responses to be Factual and consistent
 - **Max Output Tokens**: 2048 for comprehensive responses
+- **Top P**: 0.8  Nucleus sampling for controlled creativity
+- **Thinking**: 0 Disabled cost concerns/ Can enable for better responses
 - **Safety Settings**: Configured to block harmful content
 - **Function Calling**: Enabled for real-time data integration
 

@@ -13,8 +13,8 @@ from services.prompt_loader import load_system_prompt, render_user_prompt
 from services.logging import initialize_metrics, log_request, estimate_tokens, logger
 
 # Model Constants
-THINKING_BUDGET = 0  # Enable thinking for better reasoning
-TEMPERATURE = 0.2  # Slightly higher for better formatting while maintaining accuracy
+THINKING_BUDGET = 0  # Thinking for better reasoning for cost concerns/ Can enable for better responses
+TEMPERATURE = 0.2  # Better formatting while maintaining accuracy
 MAX_OUTPUT_TOKENS = 2048  # Increased for detailed responses
 TOP_P = 0.8  # Nucleus sampling for controlled creativity
 model_name = "gemini-2.5-flash-lite"
