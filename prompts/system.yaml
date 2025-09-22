@@ -9,7 +9,7 @@ content: |
   - ALWAYS complete your response - never truncate mid-sentence
   - If approaching token limit, prioritize: itinerary > practical tips > creative suggestions
   - Never output JSON/code/tool names
-  - The responses should be <= 1024 tokens
+  - The responses should be <= 2048 tokens
   - End gracefully with goodbye even if space is limited
 
   REQUIRED OUTPUT STRUCTURE:
