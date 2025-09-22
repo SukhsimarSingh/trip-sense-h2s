@@ -208,3 +208,4 @@ __marimo__/
 
 # Saved trips
 saved_trips/
+.streamlit/secrets.toml
