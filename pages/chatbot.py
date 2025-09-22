@@ -5,7 +5,7 @@ import re
 from services.gemini import TripSenseAI
 from services.prompt_loader import load_system_prompt
 from services.logging import logger, initialize_metrics
-from services.trip_storage import trip_storage
+from services.trip_storage import save_trip
 from styles.styles import CHATBOT_HEADER
 
 SYSTEM_INSTRUCTION = load_system_prompt()
@@ -81,12 +81,6 @@ def cleanup_chatbot_session():
         "chatbot_session_fully_initialized"
     ]
     
-    # Never remove these keys as they prevent regeneration issues:
-    # - initial_prompt_processed
-    # - trip_data  
-    # - initial_prompt
-    # - main_trip_itinerary
-    
     removed_keys = []
     for key in keys_to_remove:
         if key in st.session_state:
@@ -105,14 +99,12 @@ def render_chat():
             with st.chat_message(m["role"]):
                 clean_and_render_markdown(m["content"])
 
-# Uncomment below line for debugging session state
-# st.write(st.session_state)
 st.markdown(CHATBOT_HEADER, unsafe_allow_html=True)
 
 # Safety check: If no trip data, redirect to form
 if not st.session_state.get('trip_data') or not st.session_state.get('initial_prompt'):
     st.warning("No trip data found. Please create a new trip plan.")
-    st.info("Use the **Plan Trip** button in the sidebar to start planning.")
+    st.info("Use the **Plan Trip** button on top to start planning.")
     
     # Clear any partial session state
     cleanup_chatbot_session()
@@ -126,6 +118,9 @@ if not st.session_state.get('trip_data') or not st.session_state.get('initial_pr
 
 trip_data = st.session_state.trip_data
 initial_prompt = st.session_state.initial_prompt
+
+if "saved_trip_data" not in st.session_state:
+    st.session_state.saved_trip_data = []
 
 if st.session_state.trip_data:
     start_date_str = datetime.fromisoformat(trip_data['start_date']).strftime('%b %d')
@@ -150,7 +145,7 @@ with st.container(border=True, horizontal_alignment="center"):
     # Process initial prompt only once
     if (initial_prompt and trip_data and not st.session_state.initial_prompt_processed):
         
-        logger.info(f"Processing initial prompt for trip to {trip_data.get('destination', 'Unknown')}")
+        logger.info(f"Processing initial prompt for trip to {trip_data.get('destination')}")
         logger.debug(f"Initial prompt length: {len(initial_prompt)} characters")
         
         # Add Initial prompt in the messages in the session
@@ -169,7 +164,6 @@ with st.container(border=True, horizontal_alignment="center"):
                     # Store this as the main trip itinerary (not follow-up responses)
                     st.session_state.main_trip_itinerary = model_response
                     logger.info(f"Initial plan response added to messages ({len(model_response)} characters)")
-                    logger.info("Stored as main trip itinerary for saving")
                     # Force rerun to display the initial response (only if not already rerunning)
                     if not st.session_state.get('rerunning', False):
                         st.session_state.rerunning = True
@@ -231,6 +225,7 @@ with st.container(horizontal_alignment="center", horizontal=True):
         st.switch_page("pages/form.py")
 
     if st.button("Save Trip", key="save_trip"):
+         
         try:
             # Validate that we have trip data
             if not st.session_state.get('trip_data'):
@@ -269,10 +264,12 @@ with st.container(horizontal_alignment="center", horizontal=True):
                     }
                 }
                 
-                # Save the trip
-                trip_id = trip_storage.save_trip(structured_trip_data)
-                st.success(f"Trip saved successfully! Trip ID: {trip_id}")
-                logger.info(f"Trip saved with ID: {trip_id}")
+                trip_record = save_trip(structured_trip_data)
+
+                st.session_state.saved_trip_data.append(trip_record)
+
+                st.success(f"Trip saved successfully!")
+                logger.info(f"Trip saved with ID: {trip_record.get('trip_id')}")
                 
                 # Clear session state after successful save
                 cleanup_chatbot_session()
@@ -291,4 +288,5 @@ with st.container(horizontal_alignment="center", horizontal=True):
             st.rerun()
 
     if st.button("Saved Trips", key="saved_trips"):
+        saved_trip_data = st.session_state.saved_trip_data
         st.switch_page("pages/trips.py")

@@ -8,7 +8,7 @@ from services.logging import logger
 
 import streamlit as st
 from datetime import datetime
-from services.trip_storage import trip_storage
+from services.trip_storage import save_trip
 
 # ----------------------------------
 # Config & endpoints
@@ -535,9 +535,9 @@ def save_trip(args: Dict[str, Any]) -> Dict[str, Any]:
         }
         
         # Save the trip
-        trip_id = trip_storage.save_trip(structured_trip_data)
+        trip_id = save_trip(structured_trip_data)
         
-        logger.info(f"Trip saved successfully with ID: {trip_id}")
+        logger.info(f"Trip saved successfully!")
         
         # Don't clear session state for AI saves - let user continue chatting
         # Session will be cleared when they manually navigate or save again
@@ -561,7 +561,6 @@ def save_trip(args: Dict[str, Any]) -> Dict[str, Any]:
         }
 
 # Convert the dictionary declarations to FunctionDeclaration objects
-# Use different names to avoid overwriting the actual function implementations
 search_text_declaration_obj = FunctionDeclaration(**search_text_declaration)
 get_nearby_attractions_declaration_obj = FunctionDeclaration(**get_nearby_attractions_declaration)
 get_nearby_restaurants_declaration_obj = FunctionDeclaration(**get_nearby_restaurants_declaration)

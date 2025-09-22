@@ -1,16 +1,17 @@
 import streamlit as st
-from services.trip_storage import trip_storage
 from services.logging import logger
 from datetime import datetime
 import re
 from services.export import generate_trip_pdf
+from services.trip_storage import list_trips, load_trip
 from styles.styles import TRIPS_HEADER
 
 @st.dialog(title="Trip Details", width="large")
 def show_trip_modal(trip_id):
     """Display trip details in a modal popup"""
-    # Load full trip data
-    full_trip = trip_storage.load_trip(trip_id)
+    # Load full trip data using the proper function
+    full_trip = load_trip(trip_id)
+    
     if not full_trip:
         st.error("Could not load trip details")
         if st.button("Close"):
@@ -248,8 +249,8 @@ st.markdown(TRIPS_HEADER, unsafe_allow_html=True)
 
 # Import trip storage
 try: 
-    # Get saved trips
-    saved_trips = trip_storage.list_trips()
+    # Get saved trips using the proper function
+    saved_trips = list_trips()
     
     if not saved_trips:
         st.info("No saved trips yet. Create a trip and save it to see it here!")
@@ -296,7 +297,13 @@ try:
                         st.rerun()
                     
                     if st.button(":material/delete: Delete", key=f"delete_{trip.get('trip_id')}"):
-                        if trip_storage.delete_trip(trip.get('trip_id')):
+                        # Find and remove the trip from session state
+                        trip_id = trip.get('trip_id')
+                        if "saved_trip_data" in st.session_state:
+                            st.session_state.saved_trip_data = [
+                                t for t in st.session_state.saved_trip_data 
+                                if t.get('trip_id') != trip_id
+                            ]
                             st.success("Trip deleted!")
                             st.rerun()
                         else:
@@ -305,8 +312,6 @@ try:
         # Show trip details modal if selected
         if st.session_state.get('show_trip_modal') and st.session_state.get('selected_trip_id'):
             show_trip_modal(st.session_state.selected_trip_id)
-        
-        # Navigation is now available in the sidebar
                 
 except Exception as e:
     st.error(f"Error loading saved trips: {e}")

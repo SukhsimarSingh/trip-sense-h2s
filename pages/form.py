@@ -246,6 +246,9 @@ with st.container(horizontal_alignment="center"):
                         # Store the initial prompt for future use
                         st.session_state.initial_prompt = initial_prompt
                         
+                        # Reset the processed flag so the new prompt gets processed
+                        st.session_state.initial_prompt_processed = False
+                        
                         # Show success message and navigate to chatbot
                         st.success(":material/celebration: Trip plan generated! Redirecting to your AI assistant...")
                         st.info(":material/lightbulb: Your AI assistant will help you refine and customize your itinerary.")
