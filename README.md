@@ -125,6 +125,8 @@ trip-sense-h2s/
 │   └── trip_storage.py          # Session-based trip storage
 ├── styles/                    # UI styling and themes
 │   └── styles.py                # Streamlit custom styles
+├── tests/                     # Unit Tests
+│   └── styles.py                # Testing trip storage functions
 ├── Dockerfile                 # Docker containerization config
 ├── LICENSE                    # Project license
 ├── README.md                  # Project documentation
