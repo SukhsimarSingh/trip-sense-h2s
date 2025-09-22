@@ -92,42 +92,44 @@ An intelligent travel planning application powered by Google's Gemini AI that cr
 ### Project Structure
 ```
 trip-sense-h2s/
-├── styles/                    # UI styling and themes
-│   └── styles.py             # Streamlit custom styles
-├── streamlit_app.py           # Main application entry point
-├── services/                  # Core business logic
-│   ├── trip_storage.py       # Session-based trip storage
-│   ├── tools.py              # Google API functions (Places, Weather, Maps)
-│   ├── prompt_loader.py      # Jinja2 template management
-│   ├── logging.py            # Logging and metrics tracking
-│   ├── gemini.py             # Gemini AI integration
-│   ├── export.py             # PDF export functionality
-│   └── __init__.py           # Package initialization
-├── saved_trips/               # Session-based trip storage (JSON files)
-│   ├── default_c1e8ef8d.json # Example saved trip
-│   └── default_08cceddd.json # Example saved trip
-├── requirements.txt           # Python dependencies
-├── README.md                  # Project documentation
-├── prompts/                   # AI prompts and templates
-│   ├── user/                 # User prompt templates
-│   │   └── initial_prompt.jinja
-│   └── system.yaml           # System instructions for AI
-├── pages/                     # Streamlit pages
-│   ├── trips.py              # Saved trips management
-│   ├── landing.py            # Landing page with feature overview
-│   ├── form.py               # Trip planning form
-│   └── chatbot.py            # AI chat interface
-├── LICENSE                    # Project license
-├── exports/                   # Generated PDF exports
+├── .devcontainer/            # Dev Container configuration
+├── .streamlit                # Streamlit configs
+│   └── config.toml              # Config file
+├── exports/                  # Generated PDF exports
 │   ├── Trip-to-Bangaladesh*.pdf
 │   └── A-Whirlwind-Day-in-the-Big-Apple*.pdf
 ├── documents/                 # Project documentation and diagrams
 │   ├── TripSenseUserFlow.png      # User flow diagram
 │   ├── TripSenseArchitecture.png  # Architecture diagram
 │   ├── TripSenseAppFlow.png       # Application flow diagram
-│   └── GenAI Exchange Hackathon _ Prototypye_Submission_Team_TripSense.pdf
+│   └── GenAI Exchange Hackathon_Prototypye_Submission_Team_TripSense.pdf
+├── pages/                    # Streamlit pages
+│   ├── trips.py                 # Saved trips management
+│   ├── landing.py               # Landing page with feature overview
+│   ├── form.py                  # Trip planning form
+│   └── chatbot.py               # AI chat interface
+├── prompts/                  # AI prompts and templates
+│   ├── user/                    # User prompt templates
+│   │   └── initial_prompt.jinja
+│   └── system.yaml              # System instructions for AI
+├── saved_trips/               # Session-based trip storage (JSON files)
+│   ├── default_c1e8ef8d.json # Example saved trip
+│   └── default_08cceddd.json # Example saved trip
+├── services/                 # Core business logic
+│   ├── __init__.py              # Package initialization│   
+│   ├── export.py                # PDF export functionality
+│   ├── gemini.py                # Gemini AI integration
+│   ├── logging.py               # Logging and metrics tracking
+│   ├── prompt_loader.py         # Jinja2 template management
+│   ├── tools.py                 # Google API functions (Places, Weather, Maps)
+│   └── trip_storage.py          # Session-based trip storage
+├── styles/                    # UI styling and themes
+│   └── styles.py                # Streamlit custom styles
 ├── Dockerfile                 # Docker containerization config
-└── .devcontainer/             # Dev Container configuration
+├── LICENSE                    # Project license
+├── README.md                  # Project documentation
+├── requirements.txt           # Python dependencies
+└── streamlit_app.py           # Main application entry point
 ```
 
 ## Application Workflow
