@@ -1,8 +1,8 @@
-# Trip Sense
+<h1 style="text-align:center;">Trip Sense</h1>
 
 An intelligent travel planning application powered by Google's Gemini AI that creates personalized itineraries using real-time data from Google Maps, Places, and Weather APIs. Built with Streamlit for a modern, interactive web interface.
 
-![TripSense Gif](documents/landing-gif.gif)
+![TripSenseGif](documents/tp-gif.gif)
 
 ## Table of Contents
 
