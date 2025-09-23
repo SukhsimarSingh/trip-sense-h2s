@@ -80,8 +80,8 @@ def list_trips(user_id: str = "default") -> List[Dict[str, Any]]:
             print(f"ERROR processing trip: {e}")
             continue
     
-    # Sort by creation date (newest first)
-    trips.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    # Sort by creation date (newest first), handle None values
+    trips.sort(key=lambda x: x.get("created_at") or "", reverse=True)
     return trips
 
 def load_trip(trip_id: str, user_id: str = "default") -> Optional[Dict[str, Any]]:

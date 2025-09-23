@@ -88,7 +88,30 @@ def show_trip_modal(trip_id):
         if st.button(":material/refresh: Recreate Trip", use_container_width=True):
             # Set up session state to recreate this trip
             st.session_state.trip_data = form_data.copy()
-            st.session_state.initial_prompt = None  # Will be regenerated
+            
+            # Generate new initial prompt from the form data
+            from services.prompt_loader import render_user_prompt
+            context = {
+                'origin': form_data.get('origin', ''),
+                'destination': form_data.get('destination', ''),
+                'start_date': form_data.get('start_date', ''),
+                'end_date': form_data.get('end_date', ''),
+                'season': form_data.get('season', ''),
+                'travel_months': form_data.get('travel_months', ''),
+                'travel_type': form_data.get('travel_type', ''),
+                'budget': form_data.get('budget', ''),
+                'group_size': form_data.get('group_size', ''),
+                'accommodation': form_data.get('accommodation', ''),
+                'special_requests': form_data.get('special_requests', '').strip() if form_data.get('special_requests', '').strip() else None
+            }
+            st.session_state.initial_prompt = render_user_prompt(context)
+            
+            # Reset processing flags and clear old conversation
+            st.session_state.initial_prompt_processed = False
+            st.session_state.main_trip_itinerary = None
+            st.session_state.messages = []  # Clear old conversation
+            
+            # Close modal and navigate
             st.session_state.show_trip_modal = False
             st.session_state.selected_trip_id = None
             st.switch_page("pages/chatbot.py")
@@ -253,7 +276,7 @@ try:
     saved_trips = list_trips()
     
     if not saved_trips:
-        st.info("No saved trips yet. Create a trip and save it to see it here!")
+        st.warning("No saved trips yet. Create a trip and save it to see it here!")
         st.info("Use the **Plan Trip** button on top to start planning.")
         
         # Add helpful button for new trip planning

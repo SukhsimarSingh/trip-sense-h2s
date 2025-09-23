@@ -1,10 +1,6 @@
 [server]
 enableStaticServing = true
 
-[[theme.fontFaces]]
-url = "static/Inter_24pt-Regular.ttf"
-family = "Inter"
-
 [client]
 showSidebarNavigation = true
 
@@ -18,7 +14,6 @@ borderColor = "#d3d2ca"
 showWidgetBorder = true
 baseRadius = "0.75rem"
 buttonRadius = "full"
-font = "Inter"
 headingFontWeights = [600,500,500,500,500,500]
 headingFontSizes = ["3rem", "2rem"]
 codeFont = "monospace"

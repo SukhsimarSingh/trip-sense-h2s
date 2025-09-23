@@ -534,8 +534,14 @@ def save_trip(args: Dict[str, Any]) -> Dict[str, Any]:
             }
         }
         
-        # Save the trip
-        trip_id = save_trip(structured_trip_data)
+        # Save the trip using the trip_storage module
+        from services.trip_storage import save_trip as storage_save_trip
+        trip_record = storage_save_trip(structured_trip_data)
+
+        # Ensure saved_trip_data exists and append the record
+        if "saved_trip_data" not in st.session_state:
+            st.session_state.saved_trip_data = []
+        st.session_state.saved_trip_data.append(trip_record)
         
         logger.info(f"Trip saved successfully!")
         
@@ -547,7 +553,7 @@ def save_trip(args: Dict[str, Any]) -> Dict[str, Any]:
             "message": f"Trip '{trip_name}' has been saved successfully! You can view it in the Saved Trips section. You can continue chatting to modify your itinerary or ask questions.",
             "trip_name": trip_name,
             "trip_summary": trip_summary,
-            "trip_id": trip_id,
+            "trip_id": trip_record.get('trip_id'),
             "save_timestamp": datetime.now().isoformat(),
             "action": "trip_saved"
         }
