@@ -150,8 +150,8 @@ trip-sense-h2s/
 │   │   └── initial_prompt.jinja
 │   └── system.yaml              # System instructions for AI
 ├── saved_trips/               # Session-based trip storage (JSON files)
-│   ├── default_c1e8ef8d.json # Example saved trip
-│   └── default_08cceddd.json # Example saved trip
+│   ├── default_c1e8ef8d.json   # Example saved trip
+│   └── default_08cceddd.json   # Example saved trip
 ├── services/                 # Core business logic
 │   ├── __init__.py              # Package initialization│   
 │   ├── export.py                # PDF export functionality
@@ -160,8 +160,6 @@ trip-sense-h2s/
 │   ├── prompt_loader.py         # Jinja2 template management
 │   ├── tools.py                 # Google API functions (Places, Weather, Maps)
 │   └── trip_storage.py          # Session-based trip storage
-├── static/                    # Font folder
-│   └── Inter_24pt-Regular.ttf   # Inter font files
 ├── styles/                    # UI styling and themes
 │   └── styles.py                # Streamlit custom styles
 ├── tests/                     # Unit Tests
