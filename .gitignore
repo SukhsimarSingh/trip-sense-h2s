@@ -208,7 +208,10 @@ __marimo__/
 
 # Saved trips
 saved_trips/
+
+# Streamlit secrets and auth
 .streamlit/secrets.toml
+.streamlit/auth_config.yaml
 
 # Firebase credentials
 firebase-key.json
