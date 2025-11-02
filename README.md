@@ -4,7 +4,7 @@ An intelligent travel planning application powered by Google's Gemini AI that cr
 
 ![TripSenseGif](documents/tp-gif.gif)
 
-https://trip-sense.streamlit.app/
+[https://trip-sense.streamlit.app/](https://trip-sense-988549865021.europe-north1.run.app/)
 
 ## Table of Contents
 
