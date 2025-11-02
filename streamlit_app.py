@@ -8,12 +8,14 @@ landing = st.Page("pages/landing.py", title="Home", icon=":material/home:", defa
 chatbot = st.Page("pages/chatbot.py", title="Chat", icon=":material/chat:")
 form = st.Page("pages/form.py", title="Plan", icon=":material/assignment:")
 trips = st.Page("pages/trips.py", title="Trips", icon=":material/trip:")
+book = st.Page("pages/book.py", title="Book", icon=":material/paid:")
 
 # Navbar
 pg = st.navigation([
     landing,
     form,
     chatbot,
-    trips
-], position = "top")
+    trips,
+    book
+], position="top")
 pg.run()
