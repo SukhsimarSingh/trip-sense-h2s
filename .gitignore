@@ -209,3 +209,41 @@ __marimo__/
 # Saved trips
 saved_trips/
 .streamlit/secrets.toml
+
+# Firebase credentials
+firebase-key.json
+*firebase*key*.json
+*service*account*.json
+*serviceAccount*.json
+*-firebase-adminsdk-*.json
+
+# Firebase Web Config
+.streamlit/firebase_config.json
+
+# Google Cloud credentials
+*.credentials.json
+gcp-key.json
+service-account.json
+
+# Cloud Run / GCP deployment
+.gcloud/
+.config/
+cloudbuild.yaml.local
+.deployment/
+
+# Environment and secrets
+.env.local
+.env.production
+.env.*.local
+secrets.yaml
+config.yaml
+
+# API Keys (SerpAPI, Gemini, etc.)
+*.key
+*.secret
+api-keys.txt
+
+# Test files
+test_firebase_trip.py
+debug_firestore_reads.py
+test_*.py
