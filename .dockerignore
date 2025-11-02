@@ -50,3 +50,36 @@ Dockerfile
 # Documentation
 README.md
 LICENSE
+
+# Secrets (API keys are set via Cloud Run environment variables)
+# Note: We include .streamlit/config.toml for theme settings
+.streamlit/secrets.toml
+.streamlit/auth_config.yaml
+.streamlit/firebase_config.json
+.env
+.env.*
+*.env
+
+# Firebase credentials
+firebase-key.json
+*firebase*key*.json
+*service*account*.json
+*serviceAccount*.json
+*-firebase-adminsdk-*.json
+
+# Google Cloud credentials
+*.credentials.json
+gcp-key.json
+service-account.json
+
+# API Keys
+*.key
+*.secret
+api-keys.txt
+
+# Test files
+test_*.py
+debug_*.py
+
+# Saved data (not needed in container)
+saved_trips/

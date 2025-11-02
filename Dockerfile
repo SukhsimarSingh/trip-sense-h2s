@@ -1,35 +1,33 @@
-# Trip Sense Dockerfile
-
+# Trip Sense - Cloud Run Dockerfile
 FROM python:3.11-slim
 
-# Keeps Python from generating .pyc files in the container
-ENV PYTHONDONTWRITEBYTECODE=1
-
-# Turns off buffering for easier container logging
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8080 \
+    STREAMLIT_SERVER_PORT=${PORT} \
+    STREAMLIT_SERVER_ADDRESS=0.0.0.0 \
+    DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# System deps (keep minimal)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl \
+  && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
+# Copy and install Python deps first (cache-friendly)
 COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Install Python dependencies
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-# Copy the entire project
+# Copy app code
 COPY . .
 
-# Create necessary directories if they don't exist
-RUN mkdir -p saved_trips exports
+# Optional: non-root user for security
+RUN useradd -m appuser
+USER appuser
 
-EXPOSE 8501
+# Cloud Run discovers the port via $PORT; no need to EXPOSE
+# Prefer app-level /healthz endpoint over Docker HEALTHCHECK
 
-HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
-
-ENTRYPOINT ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true --browser.serverAddress=0.0.0.0
