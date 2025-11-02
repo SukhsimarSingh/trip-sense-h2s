@@ -1,7 +1,7 @@
 import streamlit as st
 from datetime import datetime
 import re
-
+from services.firebase_auth import get_user_id
 from services.gemini import TripSenseAI
 from services.prompt_loader import load_system_prompt
 from services.logging import logger, initialize_metrics
@@ -104,7 +104,7 @@ st.markdown(CHATBOT_HEADER, unsafe_allow_html=True)
 # Safety check: If no trip data, redirect to form
 if not st.session_state.get('trip_data') or not st.session_state.get('initial_prompt'):
     st.warning("No trip data found. Please create a new trip plan.")
-    st.info("Use the **Plan Trip** button on top to start planning.")
+    st.info("Use the **Plan** button on top to start planning.")
     
     # Clear any partial session state
     cleanup_chatbot_session()
@@ -264,7 +264,9 @@ with st.container(horizontal_alignment="center", horizontal=True):
                     }
                 }
                 
-                trip_record = save_trip(structured_trip_data)
+                # Save trip with logged-in user ID
+                user_id = get_user_id()
+                trip_record = save_trip(structured_trip_data, user_id=user_id)
 
                 st.session_state.saved_trip_data.append(trip_record)
 
