@@ -17,7 +17,7 @@ THINKING_BUDGET = 0  # Thinking for better reasoning for cost concerns/ Can enab
 TEMPERATURE = 0.2  # Better formatting while maintaining accuracy
 MAX_OUTPUT_TOKENS = 2048  # Increased for detailed responses
 TOP_P = 0.8  # Nucleus sampling for controlled creativity
-model_name = "gemini-2.5-flash-lite"
+model_name = "gemini-2.5-flash"
 SYSTEM_INSTRUCTION = load_system_prompt()
 
 safety_settings = [
@@ -35,13 +35,13 @@ safety_settings = [
 def get_gemini_client():
     """Initialize and cache the Gemini client to avoid recreating on every page load."""
     try:
-        # Try environment variable first (for local deployment)
-        api_key = st.secrets["GEMINI_API_KEY"]
+        # Try environment variable first (for Cloud Run)
+        api_key = os.getenv("GEMINI_API_KEY")
            
-        # If not found in environment, try Streamlit secrets (for cloud deployment)
+        # If not found in environment, try Streamlit secrets (for local development)
         if not api_key:
             try:
-                api_key = os.getenv("GEMINI_API_KEY")
+                api_key = st.secrets["GEMINI_API_KEY"]
             except (KeyError, FileNotFoundError):
                 raise ValueError("GEMINI_API_KEY not found in environment variables or Streamlit secrets. Please set your API key.")
         

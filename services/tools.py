@@ -13,12 +13,12 @@ from services.trip_storage import save_trip
 # ----------------------------------
 # Config & endpoints
 # ----------------------------------
-# Try environment variable first (for local deployment), then Streamlit secrets (for cloud deployment)
-MAPS_API_KEY = st.secrets["GOOGLE_MAPS_API_KEY"]
+# Try environment variable first (for Cloud Run), then Streamlit secrets (for local development)
+MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 if not MAPS_API_KEY:
     try:
-        MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+        MAPS_API_KEY = st.secrets["GOOGLE_MAPS_API_KEY"]
     except (KeyError, FileNotFoundError):
         MAPS_API_KEY = None  # Will be checked in individual functions with proper error messages
 PLACES_SEARCH_TEXT = "https://places.googleapis.com/v1/places:searchText"
