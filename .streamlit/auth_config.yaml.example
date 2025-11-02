@@ -1,0 +1,24 @@
+cookie:
+  expiry_days: 30
+  key: trip_sense_auth_key  # Change this to a random string
+  name: trip_sense_cookie
+credentials:
+  usernames:
+    demo:
+      email: demo@tripsense.com
+      name: Demo User
+      password: $2b$12$YourHashedPasswordHere  # Generate using bcrypt
+preauthorized:
+  emails: []
+
+# Instructions:
+# 1. Copy this file to auth_config.yaml
+# 2. Change the cookie key to a random string
+# 3. Generate hashed passwords using bcrypt:
+#    import bcrypt
+#    password = "your-password"
+#    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+#    print(hashed.decode())
+# 4. Replace the password hash above
+# 5. NEVER commit auth_config.yaml to version control
+
