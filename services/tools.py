@@ -21,6 +21,11 @@ if not MAPS_API_KEY:
         MAPS_API_KEY = st.secrets["GOOGLE_MAPS_API_KEY"]
     except (KeyError, FileNotFoundError):
         MAPS_API_KEY = None  # Will be checked in individual functions with proper error messages
+
+# Strip any whitespace/newlines from the API key
+if MAPS_API_KEY:
+    MAPS_API_KEY = MAPS_API_KEY.strip()
+    logger.info(f"✅ Google Maps API Key loaded (length: {len(MAPS_API_KEY)})")
 PLACES_SEARCH_TEXT = "https://places.googleapis.com/v1/places:searchText"
 PLACES_SEARCH_NEARBY = "https://places.googleapis.com/v1/places:searchNearby"
 WEATHER_CURRENT_URL = "https://weather.googleapis.com/v1/currentConditions:lookup"
