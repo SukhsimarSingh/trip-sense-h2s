@@ -41,9 +41,9 @@ def show_trip_modal(trip_id):
             try:
                 date_obj = datetime.fromisoformat(booked_date.replace('Z', '+00:00'))
                 formatted_date = date_obj.strftime("%B %d, %Y")
-                st.success(f"✅ Trip Booked on {formatted_date}")
+                st.success(f":material/check_circle: Trip Booked on {formatted_date}")
             except:
-                st.success("✅ Trip Booked")
+                st.success(":material/check_circle: Trip Booked")
     
     st.markdown(f"**From:** {origin}")
     st.markdown(f"**To:** {destination}")
@@ -305,76 +305,10 @@ try:
             if st.button("Create Your First Trip", type="primary"):
                 st.switch_page("pages/form.py")
     else:
-        # Display booked trips section first
-        if booked_trips:
-            st.markdown("### ✅ Booked Trips")
-            st.write(f"**{len(booked_trips)} trip(s) ready to go:**")
-            st.markdown("---")
-            
-            # Display booked trips
-            for trip in booked_trips:
-                with st.container(border=True):                
-                    
-                    trip_name = trip.get('trip_name', 'Untitled Trip')
-                    st.subheader(f"✈️ {trip_name}")
-                    
-                    # Show booking badge
-                    booked_date = trip.get('booked_at', '')
-                    if booked_date:
-                        try:
-                            date_obj = datetime.fromisoformat(booked_date.replace('Z', '+00:00'))
-                            formatted_date = date_obj.strftime("%B %d, %Y")
-                            st.success(f"🎉 Booked on {formatted_date}")
-                        except:
-                            st.success("🎉 Booked")
 
-                    col1, col2, col3 = st.columns([3, 2, 1])
-
-                    with col1:
-                        st.write(f"**:material/map: From:** {trip.get('origin', 'Unknown')}")
-                        st.write(f"**:material/pin_drop: To:** {trip.get('destination', 'Unknown')}")
-                        st.write(f"**:material/calendar_month: Duration:** {trip.get('start_date', 'N/A')} to {trip.get('end_date', 'N/A')}")
-                        if trip.get('trip_summary'):
-                            st.write(f"**:material/description: Summary:** {trip.get('trip_summary')}")
-                    
-                    with col2:
-                        created_date = trip.get('created_at', '')
-                        if created_date:
-                            try:
-                                date_obj = datetime.fromisoformat(created_date.replace('Z', '+00:00'))
-                                formatted_date = date_obj.strftime("%B %d, %Y")
-                                st.write(f"**:material/bookmark: Created:** {formatted_date}")
-                            except:
-                                st.write(f"**:material/bookmark: Created:** {created_date[:10]}")
-                        
-                            st.write(f"**:material/group: Travelers:** {trip.get('group_size', 'N/A')}")
-                            st.write(f"**:material/payments: Budget:** {trip.get('budget', 'N/A')}")
-                            st.write(f"**:material/travel_explore: Type:** {trip.get('travel_type', 'N/A')}")
-                                    
-                    with col3:
-                        if st.button(":material/view_list: View Details", key=f"view_booked_{trip.get('trip_id')}"):
-                            st.session_state.selected_trip_id = trip.get('trip_id')
-                            st.session_state.show_trip_modal = True
-                            st.rerun()
-                        
-                        if st.button(":material/delete: Delete", key=f"delete_booked_{trip.get('trip_id')}"):
-                            # Find and remove the trip from session state
-                            trip_id = trip.get('trip_id')
-                            if "saved_trip_data" in st.session_state:
-                                st.session_state.saved_trip_data = [
-                                    t for t in st.session_state.saved_trip_data 
-                                    if t.get('trip_id') != trip_id
-                                ]
-                                st.success("Trip deleted!")
-                                st.rerun()
-                            else:
-                                st.error("Failed to delete trip")
-            
-            st.markdown("<br>", unsafe_allow_html=True)
-        
         # Display saved trips section
         if saved_trips:
-            st.markdown("### 📝 Saved Trips")
+            st.markdown("## Saved Trips")
             st.write(f"**{len(saved_trips)} trip(s) ready to book:**")
             st.markdown("---")
             
@@ -435,6 +369,75 @@ try:
                                 st.rerun()
                             else:
                                 st.error("Failed to delete trip")
+            
+            st.markdown("<br>", unsafe_allow_html=True)
+
+        # Display booked trips section
+        if booked_trips:
+            st.markdown("## Booked Trips")
+            st.write(f"**{len(booked_trips)} trip(s) ready to go:**")
+            st.markdown("---")
+            
+            # Display booked trips
+            for trip in booked_trips:
+                with st.container(border=True):                
+                    
+                    trip_name = trip.get('trip_name', 'Untitled Trip')
+                    st.subheader(f":material/flight: {trip_name}")
+                    
+                    # Show booking badge
+                    booked_date = trip.get('booked_at', '')
+                    if booked_date:
+                        try:
+                            date_obj = datetime.fromisoformat(booked_date.replace('Z', '+00:00'))
+                            formatted_date = date_obj.strftime("%B %d, %Y")
+                            st.success(f":material/celebration: Booked on {formatted_date}")
+                        except:
+                            st.success(":material/celebration: Booked")
+
+                    col1, col2, col3 = st.columns([3, 2, 1])
+
+                    with col1:
+                        st.write(f"**:material/map: From:** {trip.get('origin', 'Unknown')}")
+                        st.write(f"**:material/pin_drop: To:** {trip.get('destination', 'Unknown')}")
+                        st.write(f"**:material/calendar_month: Duration:** {trip.get('start_date', 'N/A')} to {trip.get('end_date', 'N/A')}")
+                        if trip.get('trip_summary'):
+                            st.write(f"**:material/description: Summary:** {trip.get('trip_summary')}")
+                    
+                    with col2:
+                        created_date = trip.get('created_at', '')
+                        if created_date:
+                            try:
+                                date_obj = datetime.fromisoformat(created_date.replace('Z', '+00:00'))
+                                formatted_date = date_obj.strftime("%B %d, %Y")
+                                st.write(f"**:material/bookmark: Created:** {formatted_date}")
+                            except:
+                                st.write(f"**:material/bookmark: Created:** {created_date[:10]}")
+                        
+                            st.write(f"**:material/group: Travelers:** {trip.get('group_size', 'N/A')}")
+                            st.write(f"**:material/payments: Budget:** {trip.get('budget', 'N/A')}")
+                            st.write(f"**:material/travel_explore: Type:** {trip.get('travel_type', 'N/A')}")
+                                    
+                    with col3:
+                        if st.button(":material/view_list: View Details", key=f"view_booked_{trip.get('trip_id')}"):
+                            st.session_state.selected_trip_id = trip.get('trip_id')
+                            st.session_state.show_trip_modal = True
+                            st.rerun()
+                        
+                        if st.button(":material/delete: Delete", key=f"delete_booked_{trip.get('trip_id')}"):
+                            # Find and remove the trip from session state
+                            trip_id = trip.get('trip_id')
+                            if "saved_trip_data" in st.session_state:
+                                st.session_state.saved_trip_data = [
+                                    t for t in st.session_state.saved_trip_data 
+                                    if t.get('trip_id') != trip_id
+                                ]
+                                st.success("Trip deleted!")
+                                st.rerun()
+                            else:
+                                st.error("Failed to delete trip")
+            
+            st.markdown("<br>", unsafe_allow_html=True)
         
         # Show trip details modal if selected
         if st.session_state.get('show_trip_modal') and st.session_state.get('selected_trip_id'):

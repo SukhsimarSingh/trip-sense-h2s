@@ -158,24 +158,24 @@ def save_booking_info(trip_id, transaction_id, amount, payment_method, card_last
         booking_ref = db.collection('bookings').document(f"{user_id}_{trip_id}")
         booking_ref.set(booking_data)
         
-        print(f"✅ [BOOKING] Booking info saved to Firestore for trip {trip_id}")
+        print(f"[BOOKING] Booking info saved to Firestore for trip {trip_id}")
         
     except Exception as e:
-        print(f"❌ [BOOKING] Error saving booking info: {e}")
+        print(f"[BOOKING] Error saving booking info: {e}")
 
 # Display page header
 st.markdown(BOOK_HEADER, unsafe_allow_html=True)
 
 # Get user trips for the selector
 user_id = get_user_id()
-print(f"🔍 [BOOK PAGE] Loading trips list for user: {user_id}")
+print(f"[BOOK PAGE] Loading trips list for user: {user_id}")
 
 all_trips = list_trips(user_id=user_id)
-print(f"✅ [BOOK PAGE] Loaded {len(all_trips)} trips")
+print(f"[BOOK PAGE] Loaded {len(all_trips)} trips")
 
 # Filter out already booked trips
 unbooked_trips = [trip for trip in all_trips if not trip.get('is_booked', False)]
-print(f"📋 [BOOK PAGE] {len(unbooked_trips)} unbooked trips available")
+print(f"[BOOK PAGE] {len(unbooked_trips)} unbooked trips available")
 
 # Check if user has any unbooked trips
 if not unbooked_trips:
@@ -231,9 +231,9 @@ st.markdown("---")
 # Load the selected trip details
 trip_id = selected_trip_id
 
-print(f"🔍 [BOOK PAGE] Loading trip details for: {trip_id}")
+print(f"[BOOK PAGE] Loading trip details for: {trip_id}")
 full_trip = load_trip(trip_id, user_id=user_id)
-print(f"✅ [BOOK PAGE] Trip details loaded")
+print(f"[BOOK PAGE] Trip details loaded")
 
 if not full_trip:
     st.error("Could not load trip details")
@@ -273,15 +273,15 @@ with st.container(border=True):
         st.write(f"{form_data.get('accommodation', 'N/A')}")
     
     with col3:
-        st.write(f"**:material/group: Travelers**")
+        st.write(f"**:material/group: Travellers**")
         st.write(f"{group_size} people")
         st.write(f"**:material/schedule: Duration**")
         st.write(f"{form_data.get('duration', 'N/A')} days")
 
 st.markdown("---")
 
-# Traveler Information Form
-st.markdown("### :material/person: Traveler Information")
+# Traveller Information Form
+st.markdown("### :material/person: Traveller Information")
 st.info(":material/lightbulb_2: **Get Ready to Book!** Fill in your details below. You'll need this information when booking flights, hotels, and transportation.")
 
 with st.container(border=True):
@@ -304,7 +304,7 @@ with st.container(border=True):
 if group_size > 1:
     st.markdown("---")
     with st.container(border=True):
-        st.markdown(f"#### Passenger Details ({group_size} Travelers)")
+        st.markdown(f"#### Passenger Details ({group_size} Travellers)")
         st.caption("Enter details for all passengers (including yourself)")
         
         # Initialize passenger data in session state
@@ -347,10 +347,10 @@ if group_size > 1:
 
 st.markdown("---")
 
-# Save button for traveler info
+# Save button for traveller info
 col1, col2, col3 = st.columns([1, 1, 1])
 with col2:
-    save_info_btn = st.button(":material/save: Save Traveler Information", type="primary", use_container_width=True)
+    save_info_btn = st.button(":material/save: Save Traveller Information", type="primary", use_container_width=True)
     
     if save_info_btn:
         # Validate required fields
@@ -380,7 +380,7 @@ with col2:
                 "group_size": group_size,
                 "saved": True
             }
-            st.success(f":material/check_circle: Traveler information saved for {group_size} traveler(s)! You can now proceed with the booking guide below.")
+            st.success(f":material/check_circle: Traveller information saved for {group_size} traveller(s)! You can now proceed with the booking guide below.")
             st.balloons()
 
 st.markdown("---")
@@ -399,7 +399,7 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
         # Clear old trip's progress and info
         st.session_state.current_booking_trip_id = trip_id
         st.session_state.pop(progress_key, None)
-        print(f"🔄 [BOOKING] Switched to new trip {trip_id}, resetting progress")
+        print(f"[BOOKING] Switched to new trip {trip_id}, resetting progress")
     
     if progress_key not in st.session_state:
         st.session_state[progress_key] = {
@@ -409,7 +409,7 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
             'insurance': False,
             'documents': False
         }
-        print(f"✨ [BOOKING] Initialized fresh progress for trip {trip_id}")
+        print(f"[BOOKING] Initialized fresh progress for trip {trip_id}")
     
     progress = st.session_state[progress_key]
     total_steps = len(progress)
@@ -433,11 +433,11 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
             st.write(f"• **Phone:** {saved_info.get('phone', 'N/A')}")
             st.write(f"• **Country:** {saved_info.get('country', 'N/A')}")
             
-            # Show all travelers
+            # Show all travellers
             passengers = saved_info.get('passengers', [])
             if passengers and len(passengers) > 0:
                 st.markdown("---")
-                st.markdown(f"**All Travelers ({len(passengers)}):**")
+                st.markdown(f"**All Travellers ({len(passengers)}):**")
                 for idx, passenger in enumerate(passengers, 1):
                     if passenger.get('name'):
                         st.write(f"{idx}. {passenger.get('name', 'N/A')} - {passenger.get('age', 'N/A')}yrs ({passenger.get('gender', 'N/A')})")
@@ -465,7 +465,7 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
             
             total_estimate = flight_cost + hotel_cost + activity_cost + transport_cost
             
-            st.markdown("**Per Category (All Travelers):**")
+            st.markdown("**Per Category (All Travellers):**")
             st.write(f":material/flight: **Flights:** ${flight_cost:,.0f}")
             st.write(f":material/hotel: **Hotels:** ${hotel_cost:,.0f} ({duration} nights)")
             st.write(f":material/flag: **Activities:** ${activity_cost:,.0f}")
@@ -473,7 +473,7 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
             
             st.markdown("---")
             st.markdown(f"### **Total Estimate:** ${total_estimate:,.0f}")
-            st.caption(f"For {group_size} traveler(s) × {duration} days")
+            st.caption(f"For {group_size} traveller(s) × {duration} days")
             st.caption("*Estimates based on your budget preference. Actual costs may vary.")
     
     st.markdown("---")
@@ -631,7 +631,33 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                             st.success("Flight selection confirmed!")
                             st.rerun()
             
-            # Checkbox removed - auto-completed when flight is confirmed
+            # Manual booking option
+            if not st.session_state.get(f'flight_confirmed_{trip_id}'):
+                st.markdown("---")
+                st.markdown("**:material/check_box: Or, if you've booked elsewhere:**")
+                manual_flight_key = f'manual_flight_booked_{trip_id}'
+                
+                # Build flight date info
+                flight_date_info = f"{origin} → {destination} on {start_date}"
+                if end_date and end_date != start_date:
+                    flight_date_info += f" (Return: {end_date})"
+                
+                manual_flight_checked = st.checkbox(
+                    f":material/flight: I've booked flights via EaseMyTrip or another platform ({flight_date_info})",
+                    key=manual_flight_key,
+                    help=f"Check this if you've completed your flight booking for {flight_date_info}"
+                )
+                
+                if manual_flight_checked:
+                    st.session_state[f'flight_confirmed_{trip_id}'] = True
+                    st.session_state[progress_key]['flights'] = True
+                    st.session_state[f'selected_flight_data_{trip_id}'] = {
+                        'airline': 'Manually Booked',
+                        'price': 'Booked Externally',
+                        'booking_source': 'External Platform'
+                    }
+                    st.success(":material/check_circle: Flight booking confirmed!")
+                    st.rerun()
         
         # Step 2: Accommodation
         with st.expander(":material/hotel: **Accommodation**", expanded=progress['flights'] and not progress['accommodation']):
@@ -731,7 +757,7 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                                     stars = ""
                                 
                                 st.write(f"**{hotel.get('name', 'N/A')}** {stars}")
-                                st.caption(f"📍 {hotel_type}")
+                                st.caption(f":material/location_on: {hotel_type}")
                                 
                                 # Rating and reviews
                                 rating = hotel.get('rating', 0)
@@ -741,7 +767,7 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                                     if rating and rating != 'N/A':
                                         rating_val = float(rating) if isinstance(rating, str) else rating
                                         reviews_val = int(reviews) if reviews and reviews != 'N/A' else 0
-                                        st.caption(f"⭐ {rating_val}/5 · {reviews_val:,} reviews")
+                                        st.caption(f":material/star: {rating_val}/5 · {reviews_val:,} reviews")
                                 except (ValueError, TypeError):
                                     pass  # Skip if conversion fails
                                 
@@ -749,13 +775,13 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                                 amenities = hotel.get('amenities', [])[:5]
                                 if amenities:
                                     amenity_icons = {
-                                        'Free Wi-Fi': '📶',
-                                        'Pool': '🏊',
-                                        'Parking': '🅿️',
-                                        'Gym': '💪',
-                                        'Restaurant': '🍽️',
-                                        'Air conditioning': '❄️',
-                                        'Spa': '🧖'
+                                        'Free Wi-Fi': ':material/wifi:',
+                                        'Pool': ':material/pool:',
+                                        'Parking': ':material/local_parking:',
+                                        'Gym': ':material/fitness_center:',
+                                        'Restaurant': ':material/restaurant:',
+                                        'Air conditioning': ':material/ac_unit:',
+                                        'Spa': ':material/spa:'
                                     }
                                     amenity_str = " • ".join([
                                         amenity_icons.get(a, '✓') + " " + a 
@@ -765,7 +791,7 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                                 
                                 # Eco certified badge
                                 if hotel.get('eco_certified'):
-                                    st.caption("🌱 Eco Certified")
+                                    st.caption(":material/eco: Eco Certified")
                             
                             with col2:
                                 per_night = hotel.get('rate_per_night', 'N/A')
@@ -778,7 +804,7 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                                 # Show nearby places if available
                                 nearby = hotel.get('nearby_places', [])
                                 if nearby:
-                                    st.caption(f"📍 Near {len(nearby)} attractions")
+                                    st.caption(f":material/location_on: Near {len(nearby)} attractions")
                     
                     # Confirm Hotel Selection Button
                     st.markdown("---")
@@ -795,7 +821,34 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                             st.success("Hotel selection confirmed!")
                             st.rerun()
             
-            # Checkbox removed - auto-completed when hotel is confirmed
+            # Manual booking option
+            if not st.session_state.get(f'hotel_confirmed_{trip_id}'):
+                st.markdown("---")
+                st.markdown("**:material/check_box: Or, if you've booked elsewhere:**")
+                manual_hotel_key = f'manual_hotel_booked_{trip_id}'
+                
+                # Build hotel date info
+                hotel_date_info = f"{destination}: {start_date} to {end_date}"
+                nights = (datetime.fromisoformat(end_date) - datetime.fromisoformat(start_date)).days if end_date else 0
+                if nights > 0:
+                    hotel_date_info += f" ({nights} night{'s' if nights != 1 else ''})"
+                
+                manual_hotel_checked = st.checkbox(
+                    f":material/hotel: I've booked accommodation via EaseMyTrip or another platform ({hotel_date_info})",
+                    key=manual_hotel_key,
+                    help=f"Check this if you've completed your hotel booking for {hotel_date_info}"
+                )
+                
+                if manual_hotel_checked:
+                    st.session_state[f'hotel_confirmed_{trip_id}'] = True
+                    st.session_state[progress_key]['accommodation'] = True
+                    st.session_state[f'selected_hotel_data_{trip_id}'] = {
+                        'name': 'Manually Booked',
+                        'total_rate': 'Booked Externally',
+                        'booking_source': 'External Platform'
+                    }
+                    st.success(":material/check_circle: Hotel booking confirmed!")
+                    st.rerun()
         
         # Step 3: Activities & Events
         with st.expander(":material/local_activity: **Activities & Events**", expanded=progress['accommodation'] and not progress['activities']):
@@ -916,7 +969,34 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                             st.success("Event selection confirmed!")
                             st.rerun()
             
-            # Checkbox removed - auto-completed when events are confirmed
+            # Manual booking option
+            if not st.session_state.get(f'events_confirmed_{trip_id}'):
+                st.markdown("---")
+                st.markdown("**:material/check_box: Or, if you've booked elsewhere:**")
+                manual_event_key = f'manual_event_booked_{trip_id}'
+                
+                # Build event date info
+                event_date_info = f"{destination}"
+                if start_date and end_date and start_date != end_date:
+                    event_date_info += f": {start_date} to {end_date}"
+                elif start_date:
+                    event_date_info += f" on {start_date}"
+                
+                manual_event_checked = st.checkbox(
+                    f":material/local_activity: I've booked activities/events via EaseMyTrip or another platform ({event_date_info})",
+                    key=manual_event_key,
+                    help=f"Check this if you've completed your activity/event booking for {event_date_info} or plan to book them later"
+                )
+                
+                if manual_event_checked:
+                    st.session_state[f'events_confirmed_{trip_id}'] = True
+                    st.session_state[progress_key]['activities'] = True
+                    st.session_state[f'selected_event_data_{trip_id}'] = {
+                        'title': 'Manually Booked',
+                        'booking_source': 'External Platform'
+                    }
+                    st.success(":material/check_circle: Activity/Event booking confirmed!")
+                    st.rerun()
         
         # Step 4: Travel Insurance
         with st.expander(":material/security: **Travel Insurance**", expanded=progress['activities'] and not progress['insurance']):
@@ -969,19 +1049,54 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                     return float(numbers[0].replace(',', ''))
             return 0
         
-        flight_price = parse_price(selected_flight.get('price', '$0'))
-        hotel_price = parse_price(selected_hotel.get('total_rate', '$0'))
+        # Check if items were manually booked
+        is_manual_flight = selected_flight.get('booking_source') == 'External Platform'
+        is_manual_hotel = selected_hotel.get('booking_source') == 'External Platform'
+        
+        flight_price = parse_price(selected_flight.get('price', '$0')) if not is_manual_flight else 0
+        hotel_price = parse_price(selected_hotel.get('total_rate', '$0')) if not is_manual_hotel else 0
         
         total_amount = flight_price + hotel_price
         
-        st.markdown(f"### :material/payments: Total Amount: ${total_amount:,.2f}")
+        # Show payment information
+        if is_manual_flight or is_manual_hotel:
+            st.info(":material/info: **Note:** Some items were booked externally. The payment below covers only the items selected from our platform.")
+            
+            if is_manual_flight and is_manual_hotel:
+                st.warning(":material/warning: All items booked externally. No payment required through this platform.")
+            else:
+                st.markdown(f"### :material/payments: Total Amount: ${total_amount:,.2f}")
+        else:
+            st.markdown(f"### :material/payments: Total Amount: ${total_amount:,.2f}")
         
         col1, col2, col3 = st.columns([1, 1, 1])
         with col2:
-            if st.button(":material/credit_card: Proceed to Payment", type="primary", use_container_width=True, key="proceed_to_payment"):
-                st.session_state.show_payment_modal = True
-                st.session_state.payment_amount = total_amount
-                st.rerun()
+            # If everything is booked externally, allow completing without payment
+            if is_manual_flight and is_manual_hotel:
+                if st.button(":material/check_circle: Complete Booking", type="primary", use_container_width=True, key="complete_external_booking"):
+                    # Mark as completed without payment
+                    st.session_state[f'payment_completed_{trip_id}'] = True
+                    st.session_state[f'transaction_id_{trip_id}'] = "EXTERNAL-BOOKING"
+                    
+                    # Mark trip as booked
+                    user_id = get_user_id()
+                    update_trip(
+                        trip_id=trip_id,
+                        user_id=user_id,
+                        updates={
+                            'is_booked': True,
+                            'booked_at': datetime.now().isoformat()
+                        }
+                    )
+                    
+                    st.success(":material/celebration: Trip marked as completed!")
+                    st.balloons()
+                    st.rerun()
+            else:
+                if st.button(":material/credit_card: Proceed to Payment", type="primary", use_container_width=True, key="proceed_to_payment"):
+                    st.session_state.show_payment_modal = True
+                    st.session_state.payment_amount = total_amount
+                    st.rerun()
     
     elif payment_completed:
         st.markdown("---")
@@ -1018,8 +1133,8 @@ if st.session_state.get("booking_contact_info", {}).get("saved"):
                 st.switch_page("pages/form.py")
 
 else:
-    st.warning(":material/warning: Please save your traveler information above before proceeding with the booking guide.")
-    st.info(":material/arrow_upward: Fill in the form above and click ':material/save: Save Traveler Information' to continue.")
+    st.warning(":material/warning: Please save your traveller information above before proceeding with the booking guide.")
+    st.info(":material/arrow_upward: Fill in the form above and click ':material/save: Save Traveller Information' to continue.")
 
 # End of booking guide section
 
