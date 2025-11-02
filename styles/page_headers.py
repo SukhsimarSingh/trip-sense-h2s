@@ -2,8 +2,7 @@
 Page header components for different sections of the Trip Sense app.
 """
 
-from styles.icons import PLAN_ICON_BASE64, CHAT_ICON_BASE64, SAVED_ICON_BASE64
-
+from styles.icons import PLAN_ICON_BASE64, CHAT_ICON_BASE64, SAVED_ICON_BASE64, PAID_ICON_BASE64
 
 # Form Page Header
 FORM_PAGE_HTML = f"""
@@ -34,3 +33,12 @@ TRIPS_HEADER = f"""
     </div>
 """
 
+# Book Page Header
+BOOK_HEADER = f"""
+    <div style="text-align: center; padding: 3rem 0;">
+        <h1>
+        <img src="{PAID_ICON_BASE64}" style="width: 3.5rem; height: 3.5rem; vertical-align: middle; margin-right: 0.5rem;"/> Book Your Trip</h1>
+        <br>
+        <p style="color: #666; font-size: 1.1rem;">Turn your dream trip into reality with our booking guide</p>
+    </div>
+"""

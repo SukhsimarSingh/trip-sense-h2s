@@ -11,7 +11,8 @@ from styles.icons import (
     SAVED_ICON_BASE64,
     FORM_ICON_BASE64,
     CHECK_ICON_BASE64,
-    HEART_ICON_BASE64
+    HEART_ICON_BASE64,
+    PAID_ICON_BASE64
 )
 
 from styles.landing import (
@@ -22,7 +23,8 @@ from styles.landing import (
 from styles.page_headers import (
     FORM_PAGE_HTML,
     CHATBOT_HEADER,
-    TRIPS_HEADER
+    TRIPS_HEADER,
+    BOOK_HEADER
 )
 
 # Re-export everything for backward compatibility
@@ -41,5 +43,6 @@ __all__ = [
     # Page headers
     'FORM_PAGE_HTML',
     'CHATBOT_HEADER',
-    'TRIPS_HEADER'
+    'TRIPS_HEADER',
+    'BOOK_HEADER'
 ]
