@@ -3,12 +3,12 @@
 ## Overview
 
 This comprehensive guide will help you deploy the complete Trip Sense application to Google Cloud Run, including:
-- ✅ AI-powered trip planning with Gemini AI
-- ✅ Firebase Authentication for user management
-- ✅ Firebase Firestore for cloud storage  
-- ✅ SerpAPI integration for real-time flight/hotel search
-- ✅ Payment processing capabilities
-- ✅ Professional PDF exports
+- AI-powered trip planning with Gemini AI
+- Firebase Authentication for user management
+- Firebase Firestore for cloud storage  
+- SerpAPI integration for real-time flight/hotel search
+- Payment processing capabilities
+- Professional PDF exports
 
 **Deployment Options:**
 1. **Google Cloud Run**: Full control, scalable, pay-per-use
@@ -111,7 +111,7 @@ do
     --role="roles/secretmanager.secretAccessor"
 done
 
-echo "✅ All secrets created and access granted!"
+echo "All secrets created and access granted!"
 ```
 
 **Note:** 
@@ -155,11 +155,11 @@ gcloud run deploy trip-sense \
 ```
 
 **Benefits of Secret Manager:**
-- ✅ Encrypted at rest and in transit
-- ✅ Automatic rotation support
-- ✅ Audit logging of access
-- ✅ Version control for secrets
-- ✅ No secrets in environment variables
+- Encrypted at rest and in transit
+- Automatic rotation support
+- Audit logging of access
+- Version control for secrets
+- No secrets in environment variables
 
 **Option B: Deploy with Environment Variables (Quick Start / Development)**
 
@@ -216,11 +216,11 @@ Your application requires the following credentials:
 
 | Variable | Description | Required | Format |
 |----------|-------------|----------|---------|
-| `GEMINI_API_KEY` | Google Gemini AI API key | ✅ Yes | String (starts with "AIza") |
-| `GOOGLE_MAPS_API_KEY` | Google Maps Platform API key | ✅ Yes | String |
-| `SERPAPI_API_KEY` | SerpAPI for real-time booking | ⚠️ Recommended | String |
-| `FIREBASE_CREDENTIALS` | Firebase service account JSON | ✅ Yes | JSON string or file path |
-| `FIREBASE_WEB_CONFIG` | Firebase web app config | ✅ Yes | JSON string |
+| `GEMINI_API_KEY` | Google Gemini AI API key | Yes | String (starts with "AIza") |
+| `GOOGLE_MAPS_API_KEY` | Google Maps Platform API key | Yes | String |
+| `SERPAPI_API_KEY` | SerpAPI for real-time booking | Recommended | String |
+| `FIREBASE_CREDENTIALS` | Firebase service account JSON | Yes | JSON string or file path |
+| `FIREBASE_WEB_CONFIG` | Firebase web app config | Yes | JSON string |
 
 **Notes:**
 - **GEMINI_API_KEY**: Powers AI trip planning and itinerary generation
@@ -458,17 +458,17 @@ To use a custom domain:
 
 ### Current Security Features
 
-✅ **Secrets Excluded from Docker Image**
+**Secrets Excluded from Docker Image**
 - `.streamlit/secrets.toml` is excluded via `.dockerignore`
 - API keys are never baked into the container image
 - Keys are only stored in Cloud Run's encrypted environment
 
-✅ **Environment Variables Encrypted**
+**Environment Variables Encrypted**
 - Cloud Run encrypts environment variables at rest
 - Transmitted securely over encrypted channels
 - Only accessible to your service instances
 
-✅ **HTTPS Enabled by Default**
+**HTTPS Enabled by Default**
 - All Cloud Run services use HTTPS automatically
 - Custom SSL certificates managed by Google
 
@@ -616,14 +616,14 @@ REGION="europe-north1"
 SERVICE_NAME="trip-sense"
 IMAGE="europe-north1-docker.pkg.dev/$PROJECT_ID/trip-sense-repo/trip-sense"
 
-echo "🚀 Deploying Trip Sense to Cloud Run..."
+echo "Deploying Trip Sense to Cloud Run..."
 
 # Build and push
-echo "📦 Building container image..."
+echo "Building container image..."
 gcloud builds submit --tag $IMAGE
 
 # Deploy with secrets
-echo "🌐 Deploying to Cloud Run..."
+echo "Deploying to Cloud Run..."
 gcloud run deploy $SERVICE_NAME \
   --image $IMAGE \
   --platform managed \
@@ -637,7 +637,7 @@ gcloud run deploy $SERVICE_NAME \
   --set-secrets="GEMINI_API_KEY=gemini-api-key:latest,SERPAPI_API_KEY=serpapi-api-key:latest,FIREBASE_CREDENTIALS=firebase-credentials:latest" \
   --set-env-vars="FIREBASE_PROJECT_ID=your-firebase-project-id"
 
-echo "✅ Deployment complete!"
+echo "Deployment complete!"
 gcloud run services describe $SERVICE_NAME --region $REGION --format="value(status.url)"
 ```
 
@@ -722,40 +722,40 @@ Click **"Deploy"** and wait for the build to complete!
 
 ### Essential Setup
 
-- ✅ Deploy your application with all API keys configured
-- ✅ Test authentication (sign up, sign in, logout)
-- ✅ Test trip planning and AI generation
-- ✅ Test real-time booking (flights and hotels)
-- ✅ Test trip storage and retrieval from Firestore
-- ✅ Test PDF export functionality
-- ✅ Verify cross-device access (cloud sync)
+- Deploy your application with all API keys configured
+- Test authentication (sign up, sign in, logout)
+- Test trip planning and AI generation
+- Test real-time booking (flights and hotels)
+- Test trip storage and retrieval from Firestore
+- Test PDF export functionality
+- Verify cross-device access (cloud sync)
 
 ### Security & Production Readiness
 
-- ✅ Migrate to Secret Manager for production (if using Cloud Run)
-- ✅ Set up Firebase security rules (see [FIREBASE_SETUP.md](FIREBASE_SETUP.md))
-- ✅ Enable email verification for new users
-- ✅ Add custom domain (optional)
-- ✅ Set up monitoring and alerts
-- ✅ Configure backup strategies for Firestore
+- Migrate to Secret Manager for production (if using Cloud Run)
+- Set up Firebase security rules (see [FIREBASE_SETUP.md](FIREBASE_SETUP.md))
+- Enable email verification for new users
+- Add custom domain (optional)
+- Set up monitoring and alerts
+- Configure backup strategies for Firestore
 
 ### Optimization & Monitoring
 
-- ✅ Review and optimize costs
-- ✅ Monitor SerpAPI usage and quotas
-- ✅ Set up Firebase Analytics (optional)
-- ✅ Implement caching for API responses
-- ✅ Monitor Cloud Run/Streamlit Cloud logs
-- ✅ Set up error tracking (e.g., Sentry)
+- Review and optimize costs
+- Monitor SerpAPI usage and quotas
+- Set up Firebase Analytics (optional)
+- Implement caching for API responses
+- Monitor Cloud Run/Streamlit Cloud logs
+- Set up error tracking (e.g., Sentry)
 
 ### User Experience
 
-- ✅ Customize Firebase email templates
-- ✅ Add terms of service and privacy policy
-- ✅ Implement user feedback mechanism
-- ✅ Add analytics tracking
-- ✅ Create user documentation
-- ✅ Set up support channels
+- Customize Firebase email templates
+- Add terms of service and privacy policy
+- Implement user feedback mechanism
+- Add analytics tracking
+- Create user documentation
+- Set up support channels
 
 ---
 
