@@ -1,13 +1,13 @@
-# 🔐 Firebase Authentication Setup Guide
+# Firebase Authentication Setup Guide
 
 ## Overview
 
 Your Trip Sense app now uses **Firebase Authentication** for user management with:
-- ✅ Email/Password authentication
-- ✅ Password reset functionality
-- ✅ Email verification
-- ✅ Secure user sessions
-- ✅ Ready for Google Sign-In (OAuth)
+- Email/Password authentication
+- Password reset functionality
+- Email verification
+- Secure user sessions
+- Ready for Google Sign-In (OAuth)
 
 ## Step 1: Enable Firebase Authentication
 
@@ -66,7 +66,7 @@ Create the configuration file for local development:
 }
 ```
 
-**⚠️ Important:**
+**Important:**
 - Replace ALL placeholder values with your actual Firebase config
 - Never commit `firebase_config.json` to version control
 - Add `.streamlit/firebase_config.json` to `.gitignore`
@@ -193,7 +193,7 @@ gcloud run deploy trip-sense \
 
 ## Features
 
-### ✨ What Users Can Do
+### What Users Can Do
 
 1. **Sign Up** - Create account with email/password
 2. **Email Verification** - Receive verification email
@@ -202,7 +202,7 @@ gcloud run deploy trip-sense \
 5. **Persistent Sessions** - Stay logged in
 6. **Logout** - Sign out anytime
 
-### 🔒 Security Features
+### Security Features
 
 - Passwords hashed by Firebase (never stored plain text)
 - Email verification required
@@ -367,37 +367,37 @@ Firebase Authentication is **FREE** for:
 
 ### Configuration Security
 
-1. ✅ **Never commit** `.streamlit/firebase_config.json` to version control
-2. ✅ Add `firebase_config.json` to `.gitignore`
-3. ✅ Use environment variables or Secret Manager in production
-4. ✅ Rotate API keys periodically
-5. ✅ Restrict API keys by domain/IP when possible
+1. **Never commit** `.streamlit/firebase_config.json` to version control
+2. Add `firebase_config.json` to `.gitignore`
+3. Use environment variables or Secret Manager in production
+4. Rotate API keys periodically
+5. Restrict API keys by domain/IP when possible
 
 ### Authentication Security
 
-1. ✅ **Require email verification** before full access
-2. ✅ Implement strong password requirements
-3. ✅ Enable multi-factor authentication (optional)
-4. ✅ Use HTTPS only (enforced by Firebase)
-5. ✅ Set session timeout appropriately
-6. ✅ Implement account lockout after failed attempts
-7. ✅ Log authentication events for monitoring
+1. **Require email verification** before full access
+2. Implement strong password requirements
+3. Enable multi-factor authentication (optional)
+4. Use HTTPS only (enforced by Firebase)
+5. Set session timeout appropriately
+6. Implement account lockout after failed attempts
+7. Log authentication events for monitoring
 
 ### Firestore Security
 
-1. ✅ Implement proper security rules
-2. ✅ Validate user authentication before data access
-3. ✅ Use user-specific paths: `users/{uid}/trips/{tripId}`
-4. ✅ Never trust client-side data
-5. ✅ Implement rate limiting
+1. Implement proper security rules
+2. Validate user authentication before data access
+3. Use user-specific paths: `users/{uid}/trips/{tripId}`
+4. Never trust client-side data
+5. Implement rate limiting
 
 ### Monitoring & Alerts
 
-1. ✅ Monitor authentication activity in Firebase Console
-2. ✅ Set up alerts for unusual patterns
-3. ✅ Review user access logs regularly
-4. ✅ Track failed login attempts
-5. ✅ Monitor API usage and quotas
+1. Monitor authentication activity in Firebase Console
+2. Set up alerts for unusual patterns
+3. Review user access logs regularly
+4. Track failed login attempts
+5. Monitor API usage and quotas
 
 ### Example Security Rules
 
@@ -523,11 +523,11 @@ firebase functions:log
 ### Free Tier (Spark Plan)
 
 Firebase Authentication is **FREE** with generous limits:
-- ✅ **Unlimited** email/password users
-- ✅ **50,000** monthly active users (MAU) for phone auth
-- ✅ **10,000** phone auth verifications/month
-- ✅ **Unlimited** Google Sign-In
-- ✅ **Unlimited** other social providers
+- **Unlimited** email/password users
+- **50,000** monthly active users (MAU) for phone auth
+- **10,000** phone auth verifications/month
+- **Unlimited** Google Sign-In
+- **Unlimited** other social providers
 
 ### Paid Tier (Blaze Plan)
 
@@ -539,16 +539,16 @@ Only charges for phone authentication:
 
 ## Next Steps
 
-- ✅ Enable Firebase Authentication
-- ✅ Configure `firebase_config.json`
-- ✅ Test sign up/sign in locally
-- ✅ Deploy to production (Streamlit Cloud or Cloud Run)
-- ✅ Customize email templates
-- ✅ Set up monitoring and alerts
-- ✅ Review security rules
-- 🚀 Optionally enable Google Sign-In or other providers
-- 🚀 Consider implementing MFA for premium users
-- 🚀 Set up analytics tracking
+- Enable Firebase Authentication
+- Configure `firebase_config.json`
+- Test sign up/sign in locally
+- Deploy to production (Streamlit Cloud or Cloud Run)
+- Customize email templates
+- Set up monitoring and alerts
+- Review security rules
+- Optionally enable Google Sign-In or other providers
+- Consider implementing MFA for premium users
+- Set up analytics tracking
 
 ## Additional Resources
 

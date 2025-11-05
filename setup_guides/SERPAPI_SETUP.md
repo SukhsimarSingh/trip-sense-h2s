@@ -10,7 +10,7 @@ SerpAPI is a real-time API that scrapes search engine results from Google Flight
 
 ## Features
 
-### ✈️ Real-time Flight Search
+### Real-time Flight Search
 - Live flight prices from multiple airlines
 - Departure and arrival times
 - Flight duration and layover information
@@ -18,7 +18,7 @@ SerpAPI is a real-time API that scrapes search engine results from Google Flight
 - Airline information and flight numbers
 - Booking links to airline websites
 
-### 🏨 Real-time Hotel Search
+### Real-time Hotel Search
 - Current hotel availability and rates
 - Star ratings and guest reviews
 - Detailed amenities (WiFi, pool, breakfast, etc.)
@@ -26,7 +26,7 @@ SerpAPI is a real-time API that scrapes search engine results from Google Flight
 - Location and proximity to attractions
 - Direct booking links
 
-### 💰 Automatic Cost Estimation
+### Automatic Cost Estimation
 - Budget breakdown by category:
   - Flights (per person)
   - Hotels (per night × nights)
@@ -35,7 +35,7 @@ SerpAPI is a real-time API that scrapes search engine results from Google Flight
 - Total cost calculation for all travelers
 - Supports three budget levels: Budget, Medium, Luxury
 
-### 👥 Multi-Traveler Support
+### Multi-Traveler Support
 - Collect information for entire travel party
 - Individual traveler details (name, age, gender)
 - Group booking cost calculations
@@ -79,16 +79,16 @@ streamlit run streamlit_app.py
 2. **Enter Traveler Information**:
    - Fill in primary contact details
    - Add information for all travelers (if group size > 1)
-   - Click "💾 Save Traveler Information"
+   - Click "Save Traveler Information"
 
 3. **View Estimated Costs**:
-   - Expand the "💰 Estimated Booking Cost" section
+   - Expand the "Estimated Booking Cost" section
    - See breakdown by category (flights, hotels, activities, transport)
    - Total estimate shown for all travelers
 
 4. **Search Real-Time Flights**:
    - Open the "Flights" step
-   - Click "🔍 Find Real-Time Flights"
+   - Click "Find Real-Time Flights"
    - View top flight options with:
      - Airlines
      - Departure/Arrival times
@@ -98,7 +98,7 @@ streamlit run streamlit_app.py
 
 5. **Search Real-Time Hotels**:
    - Open the "Accommodation" step
-   - Click "🔍 Find Real-Time Hotels"
+   - Click "Find Real-Time Hotels"
    - View top hotel options with:
      - Hotel names
      - Ratings and reviews
@@ -109,10 +109,10 @@ streamlit run streamlit_app.py
 
 If SerpAPI is not configured or the quota is exceeded, the app automatically falls back to **demo mode**:
 
-- 📊 Shows realistic sample data for flights and hotels
-- ⚠️ Displays warning banner indicating demo mode
-- 🎨 Allows UI/UX testing without API costs
-- ✅ Perfect for development and demonstrations
+- Shows realistic sample data for flights and hotels
+- Displays warning banner indicating demo mode
+- Allows UI/UX testing without API costs
+- Perfect for development and demonstrations
 
 **Note**: Demo data is static and doesn't reflect real prices or availability.
 
@@ -267,12 +267,12 @@ pip install google-search-results
 
 ### Security
 
-1. ✅ Never expose API key in client-side code
-2. ✅ Store API key in environment variables
-3. ✅ Use `.env` file (gitignored) for local development
-4. ✅ Use Secret Manager for production deployment
-5. ✅ Rotate API keys periodically
-6. ✅ Set up IP restrictions if possible
+1. Never expose API key in client-side code
+2. Store API key in environment variables
+3. Use `.env` file (gitignored) for local development
+4. Use Secret Manager for production deployment
+5. Rotate API keys periodically
+6. Set up IP restrictions if possible
 
 ## Performance Tips
 
@@ -481,7 +481,7 @@ If SerpAPI doesn't fit your needs, consider:
 
 ---
 
-**🎉 Happy Booking! ✈️🏨**
+**Happy Booking!**
 
 Your users can now search and book flights and hotels without leaving your app!
 
