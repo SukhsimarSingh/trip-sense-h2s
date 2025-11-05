@@ -550,10 +550,10 @@ Unlike traditional trip planners that require switching between multiple apps an
 ## Additional Resources
 
 ### Setup Guides
-- 📘 [Firebase Setup Guide](setup_guides/FIREBASE_SETUP.md) - Configure Firestore database
-- 🔐 [Firebase Authentication Setup](setup_guides/FIREBASE_AUTH_SETUP.md) - Enable user authentication
-- ✈️ [SerpAPI Setup Guide](setup_guides/SERPAPI_SETUP.md) - Configure booking integration
-- 🚀 [Deployment Guide](setup_guides/DEPLOYMENT_GUIDE.md) - Deploy to production
+- [Firebase Setup Guide](setup_guides/FIREBASE_SETUP.md) - Configure Firestore database
+- [Firebase Authentication Setup](setup_guides/FIREBASE_AUTH_SETUP.md) - Enable user authentication
+- [SerpAPI Setup Guide](setup_guides/SERPAPI_SETUP.md) - Configure booking integration
+- [Deployment Guide](setup_guides/DEPLOYMENT_GUIDE.md) - Deploy to production
 
 ### Documentation
 - Full API documentation in code docstrings
