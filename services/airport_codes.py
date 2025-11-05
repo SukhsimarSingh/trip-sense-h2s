@@ -21,6 +21,7 @@ CITY_TO_AIRPORT = {
     "lucknow": "LKO",
     "chandigarh": "IXC",
     "coimbatore": "CJB",
+    "guwahati": "GAU",
     
     # USA
     "new york": "JFK",

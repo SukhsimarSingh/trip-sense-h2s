@@ -87,7 +87,7 @@ def _load_trips_from_firestore_once(user_id: str):
     
     # Check if already loaded for this user this session
     if st.session_state.get(load_key):
-        print(f"🔄 Trips already loaded for {user_id}, using cache (0 reads)")
+        print(f"Trips already loaded for {user_id}, using cache (0 reads)")
         return
     
     # Initialize session state for trips if not exists
@@ -98,7 +98,7 @@ def _load_trips_from_firestore_once(user_id: str):
     db = get_firestore_client()
     if db:
         try:
-            print(f"📥 Loading trips from Firestore for user: {user_id}")
+            print(f"Loading trips from Firestore for user: {user_id}")
             from google.cloud.firestore_v1.base_query import FieldFilter
             
             # Use limit to reduce reads if you have many trips
@@ -118,18 +118,18 @@ def _load_trips_from_firestore_once(user_id: str):
                 # Add all trips from Firestore
                 st.session_state.saved_trip_data.extend(firestore_trips)
                 
-                print(f"✅ Loaded {len(firestore_trips)} trips from Firestore ({len(firestore_trips)} reads)")
+                print(f"Loaded {len(firestore_trips)} trips from Firestore ({len(firestore_trips)} reads)")
             else:
-                print("📭 No trips found in Firestore (0 reads)")
+                print("No trips found in Firestore (0 reads)")
             
             # Mark as loaded for this user
             st.session_state[load_key] = True
             
         except Exception as e:
-            print(f"❌ Error loading from Firestore: {e}")
+            print(f"Error loading from Firestore: {e}")
             # Don't mark as loaded so it can retry
     else:
-        print("⚠️  Firebase not configured, using session state only")
+        print("Firebase not configured, using session state only")
         # Mark as loaded to prevent retries
         st.session_state[load_key] = True
     
@@ -224,9 +224,9 @@ def update_trip(trip_id: str, updates: Dict[str, Any], user_id: str = "default")
         try:
             doc_ref = db.collection('trips').document(trip_id)
             doc_ref.update(updates)
-            print(f"✅ Trip {trip_id} updated in Firestore")
+            print(f"Trip {trip_id} updated in Firestore")
         except Exception as e:
-            print(f"❌ Error updating trip in Firestore: {e}")
+            print(f"Error updating trip in Firestore: {e}")
             return False
     
     # Update in session state
@@ -235,8 +235,49 @@ def update_trip(trip_id: str, updates: Dict[str, Any], user_id: str = "default")
             # Apply updates to the trip record
             for key, value in updates.items():
                 trip_record[key] = value
-            print(f"✅ Trip {trip_id} updated in session state")
+            print(f"Trip {trip_id} updated in session state")
             return True
     
-    print(f"⚠️  Trip {trip_id} not found in session state")
+    print(f"Trip {trip_id} not found in session state")
+    return False
+
+def delete_trip(trip_id: str, user_id: str = "default") -> bool:
+    """
+    Delete a trip from both Firestore and session state.
+    
+    Args:
+        trip_id: The trip ID to delete
+        user_id: User identifier
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    user_id = str(user_id).replace('/', '_').replace('\\', '_').replace('..', '_')[:50]
+    
+    # Delete from Firestore first
+    db = get_firestore_client()
+    if db:
+        try:
+            doc_ref = db.collection('trips').document(trip_id)
+            doc_ref.delete()
+            print(f"Trip {trip_id} deleted from Firestore")
+        except Exception as e:
+            print(f"Error deleting trip from Firestore: {e}")
+            # Continue to delete from session state even if Firestore deletion fails
+    
+    # Delete from session state
+    if "saved_trip_data" in st.session_state:
+        initial_count = len(st.session_state.saved_trip_data)
+        st.session_state.saved_trip_data = [
+            t for t in st.session_state.saved_trip_data 
+            if t.get('trip_id') != trip_id
+        ]
+        deleted = len(st.session_state.saved_trip_data) < initial_count
+        if deleted:
+            print(f"Trip {trip_id} deleted from session state")
+            return True
+        else:
+            print(f"Trip {trip_id} not found in session state")
+            return False
+    
     return False

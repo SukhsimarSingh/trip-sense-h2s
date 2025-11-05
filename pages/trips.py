@@ -4,7 +4,7 @@ from services.firebase_auth import get_user_id
 from datetime import datetime
 import re
 from services.export import generate_trip_pdf
-from services.trip_storage import list_trips, load_trip
+from services.trip_storage import list_trips, load_trip, delete_trip
 from styles.styles import TRIPS_HEADER
 
 @st.dialog(title="Trip Details", width="large")
@@ -358,13 +358,10 @@ try:
                                 st.switch_page("pages/book.py")
                         
                         if st.button(":material/delete: Delete", key=f"delete_{trip.get('trip_id')}"):
-                            # Find and remove the trip from session state
+                            # Delete trip from both Firestore and session state
                             trip_id = trip.get('trip_id')
-                            if "saved_trip_data" in st.session_state:
-                                st.session_state.saved_trip_data = [
-                                    t for t in st.session_state.saved_trip_data 
-                                    if t.get('trip_id') != trip_id
-                                ]
+                            user_id = get_user_id()
+                            if delete_trip(trip_id, user_id):
                                 st.success("Trip deleted!")
                                 st.rerun()
                             else:
@@ -425,13 +422,10 @@ try:
                             st.rerun()
                         
                         if st.button(":material/delete: Delete", key=f"delete_booked_{trip.get('trip_id')}"):
-                            # Find and remove the trip from session state
+                            # Delete trip from both Firestore and session state
                             trip_id = trip.get('trip_id')
-                            if "saved_trip_data" in st.session_state:
-                                st.session_state.saved_trip_data = [
-                                    t for t in st.session_state.saved_trip_data 
-                                    if t.get('trip_id') != trip_id
-                                ]
+                            user_id = get_user_id()
+                            if delete_trip(trip_id, user_id):
                                 st.success("Trip deleted!")
                                 st.rerun()
                             else:

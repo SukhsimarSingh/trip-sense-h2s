@@ -21,10 +21,10 @@ def initialize_firebase():
             cred_dict = json.loads(firebase_creds)
             cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred)
-            print(f"✅ Firebase initialized from environment variable")
+            print(f"Firebase initialized from environment variable")
             return firestore.client()
         except Exception as e:
-            print(f"❌ Error initializing Firebase from env var: {e}")
+            print(f"Error initializing Firebase from env var: {e}")
     
     # Method 2: Local - Check for firebase-key.json in project root
     local_key_path = "firebase-key.json"
@@ -32,20 +32,20 @@ def initialize_firebase():
         try:
             cred = credentials.Certificate(local_key_path)
             firebase_admin.initialize_app(cred)
-            print(f"✅ Firebase initialized from {local_key_path}")
+            print(f"Firebase initialized from {local_key_path}")
             return firestore.client()
         except Exception as e:
-            print(f"❌ Error initializing Firebase from file: {e}")
+            print(f"Error initializing Firebase from file: {e}")
     
     # Method 3: Try Application Default Credentials
     try:
         cred = credentials.ApplicationDefault()
         firebase_admin.initialize_app(cred)
-        print(f"✅ Firebase initialized with Application Default Credentials")
+        print(f"Firebase initialized with Application Default Credentials")
         return firestore.client()
     except Exception as e:
-        print(f"⚠️  Firebase not configured: {e}")
-        print("💡 Tip: Place firebase-key.json in project root for local testing")
+        print(f"Firebase not configured: {e}")
+        print("Tip: Place firebase-key.json in project root for local testing")
         return None
 
 @st.cache_resource
