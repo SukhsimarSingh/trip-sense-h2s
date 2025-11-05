@@ -26,9 +26,9 @@ def get_serpapi_key() -> Optional[str]:
     if api_key:
         # Show partial key for debugging (first 8 and last 4 characters)
         masked_key = f"{api_key[:8]}...{api_key[-4:]}" if len(api_key) > 12 else "***"
-        print(f"✅ [SERPAPI] API Key loaded: {masked_key}")
+        print(f"[SERPAPI] API Key loaded: {masked_key}")
     else:
-        print("⚠️ [SERPAPI] API Key not found in environment variables")
+        print("[SERPAPI] API Key not found in environment variables")
     return api_key
 
 def search_flights(origin: str, destination: str, departure_date: str, return_date: str = None, adults: int = 1, children: int = 0) -> Dict[str, Any]:
@@ -63,8 +63,8 @@ def search_flights(origin: str, destination: str, departure_date: str, return_da
         dest_code, dest_name = get_airport_code(destination)
         
         # Check for warnings in conversion
-        if "⚠️" in origin_name:
-            print(f"⚠️ [SERPAPI] {origin_name}")
+        if "Could not find airport for" in origin_name:
+            print(f"[SERPAPI] {origin_name}")
             return {
                 'error': 'Invalid origin airport',
                 'message': f'{origin_name}. Please use airport code (e.g., MAA for Chennai) or city name.',
@@ -72,8 +72,8 @@ def search_flights(origin: str, destination: str, departure_date: str, return_da
                 'suggestion': 'Try using 3-letter airport codes like: MAA (Chennai), DEL (Delhi), BOM (Mumbai), CDG (Paris)'
             }
         
-        if "⚠️" in dest_name:
-            print(f"⚠️ [SERPAPI] {dest_name}")
+        if "Could not find airport for" in dest_name:
+            print(f"[SERPAPI] {dest_name}")
             return {
                 'error': 'Invalid destination airport',
                 'message': f'{dest_name}. Please use airport code (e.g., CDG for Paris) or city name.',
@@ -106,7 +106,7 @@ def search_flights(origin: str, destination: str, departure_date: str, return_da
         else:
             params["type"] = "2"  # One way
         
-        print(f"🔍 [SERPAPI] Searching flights: {origin} ({origin_code}) → {destination} ({dest_code}) on {departure_date}")
+        print(f"[SERPAPI] Searching flights: {origin} ({origin_code}) → {destination} ({dest_code}) on {departure_date}")
         if return_date:
             print(f"   Return: {return_date}")
         print(f"   Passengers: {adults} adult(s)" + (f", {children} child(ren)" if children > 0 else ""))
@@ -118,7 +118,7 @@ def search_flights(origin: str, destination: str, departure_date: str, return_da
         # Check for API errors
         if 'error' in results:
             error_msg = results.get('error', 'Unknown error')
-            print(f"❌ [SERPAPI] API Error: {error_msg}")
+            print(f"[SERPAPI] API Error: {error_msg}")
             return {
                 'error': error_msg,
                 'message': f'API Error: {error_msg}',
@@ -129,7 +129,7 @@ def search_flights(origin: str, destination: str, departure_date: str, return_da
         # Extract best flights
         best_flights = []
         if 'best_flights' in results:
-            print(f"✅ [SERPAPI] Found {len(results['best_flights'])} best flights")
+            print(f"[SERPAPI] Found {len(results['best_flights'])} best flights")
             
             for flight in results['best_flights'][:10]:  # Top 10 best options
                 flights_list = flight.get('flights', [])
@@ -176,7 +176,7 @@ def search_flights(origin: str, destination: str, departure_date: str, return_da
         # Extract other flights
         other_flights = []
         if 'other_flights' in results:
-            print(f"✅ [SERPAPI] Found {len(results['other_flights'])} other flights")
+            print(f"[SERPAPI] Found {len(results['other_flights'])} other flights")
             
             for flight in results['other_flights'][:10]:  # Top 10 other options
                 flights_list = flight.get('flights', [])
@@ -205,7 +205,7 @@ def search_flights(origin: str, destination: str, departure_date: str, return_da
                     'type': 'other_flight'
                 })
         
-        print(f"✅ [SERPAPI] Processed {len(best_flights)} best flights and {len(other_flights)} other flights")
+        print(f"[SERPAPI] Processed {len(best_flights)} best flights and {len(other_flights)} other flights")
         
         return {
             'success': True,
@@ -224,14 +224,14 @@ def search_flights(origin: str, destination: str, departure_date: str, return_da
         }
         
     except ImportError:
-        print("❌ [SERPAPI] Library not installed")
+        print("[SERPAPI] Library not installed")
         return {
             'error': 'SerpAPI library not installed',
             'message': 'Please install: pip install google-search-results',
             'demo_mode': True
         }
     except Exception as e:
-        print(f"❌ [SERPAPI] Error searching flights: {e}")
+        print(f"[SERPAPI] Error searching flights: {e}")
         import traceback
         traceback.print_exc()
         return {
@@ -283,7 +283,7 @@ def search_hotels(location: str, check_in: str, check_out: str, adults: int = 2,
         if children > 0:
             params["children"] = str(children)
         
-        print(f"🔍 [SERPAPI] Searching hotels in {location}")
+        print(f"[SERPAPI] Searching hotels in {location}")
         print(f"   Check-in: {check_in}, Check-out: {check_out}")
         print(f"   Guests: {adults} adult(s)" + (f", {children} child(ren)" if children > 0 else ""))
         
@@ -293,7 +293,7 @@ def search_hotels(location: str, check_in: str, check_out: str, adults: int = 2,
         # Check for API errors
         if 'error' in results:
             error_msg = results.get('error', 'Unknown error')
-            print(f"❌ [SERPAPI] API Error: {error_msg}")
+            print(f"[SERPAPI] API Error: {error_msg}")
             return {
                 'error': error_msg,
                 'message': f'API Error: {error_msg}',
@@ -305,7 +305,7 @@ def search_hotels(location: str, check_in: str, check_out: str, adults: int = 2,
         hotels = []
         
         if 'properties' in results:
-            print(f"✅ [SERPAPI] Found {len(results['properties'])} hotels")
+            print(f"[SERPAPI] Found {len(results['properties'])} hotels")
             
             for hotel in results['properties'][:15]:  # Top 15 hotels
                 # Extract rate information
@@ -338,7 +338,7 @@ def search_hotels(location: str, check_in: str, check_out: str, adults: int = 2,
                     'extracted_hotel_class': hotel.get('extracted_hotel_class', 'N/A')
                 })
         
-        print(f"✅ [SERPAPI] Processed {len(hotels)} hotels")
+        print(f"[SERPAPI] Processed {len(hotels)} hotels")
         
         return {
             'success': True,
@@ -354,14 +354,14 @@ def search_hotels(location: str, check_in: str, check_out: str, adults: int = 2,
         }
         
     except ImportError:
-        print("❌ [SERPAPI] Library not installed")
+        print("[SERPAPI] Library not installed")
         return {
             'error': 'SerpAPI library not installed',
             'message': 'Please install: pip install google-search-results',
             'demo_mode': True
         }
     except Exception as e:
-        print(f"❌ [SERPAPI] Error searching hotels: {e}")
+        print(f"[SERPAPI] Error searching hotels: {e}")
         import traceback
         traceback.print_exc()
         return {
@@ -409,7 +409,7 @@ def search_events(location: str, start_date: str = None, end_date: str = None) -
         if end_date:
             params["end_date"] = end_date
         
-        print(f"🔍 [SERPAPI] Searching events in {location}")
+        print(f"[SERPAPI] Searching events in {location}")
         if start_date or end_date:
             print(f"   Date range: {start_date or 'N/A'} to {end_date or 'N/A'}")
         
@@ -419,7 +419,7 @@ def search_events(location: str, start_date: str = None, end_date: str = None) -
         # Check for API errors
         if 'error' in results:
             error_msg = results.get('error', 'Unknown error')
-            print(f"❌ [SERPAPI] API Error: {error_msg}")
+            print(f"[SERPAPI] API Error: {error_msg}")
             return {
                 'error': error_msg,
                 'message': f'API Error: {error_msg}',
@@ -431,7 +431,7 @@ def search_events(location: str, start_date: str = None, end_date: str = None) -
         events = []
         
         if 'events_results' in results:
-            print(f"✅ [SERPAPI] Found {len(results['events_results'])} events")
+            print(f"[SERPAPI] Found {len(results['events_results'])} events")
             
             for event in results['events_results'][:20]:  # Top 20 events
                 # Extract date and time information
@@ -450,7 +450,7 @@ def search_events(location: str, start_date: str = None, end_date: str = None) -
                     'venue_info': event.get('venue', {})
                 })
         
-        print(f"✅ [SERPAPI] Processed {len(events)} events")
+        print(f"[SERPAPI] Processed {len(events)} events")
         
         return {
             'success': True,
@@ -464,14 +464,14 @@ def search_events(location: str, start_date: str = None, end_date: str = None) -
         }
         
     except ImportError:
-        print("❌ [SERPAPI] Library not installed")
+        print("[SERPAPI] Library not installed")
         return {
             'error': 'SerpAPI library not installed',
             'message': 'Please install: pip install google-search-results',
             'demo_mode': True
         }
     except Exception as e:
-        print(f"❌ [SERPAPI] Error searching events: {e}")
+        print(f"[SERPAPI] Error searching events: {e}")
         import traceback
         traceback.print_exc()
         return {

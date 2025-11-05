@@ -256,22 +256,18 @@ def get_airport_code(location: str) -> tuple[str, str]:
             return (code, city.title())
     
     # Not found - return original with warning
-    return (location_clean.upper(), f"⚠️ Could not find airport for '{location_clean}'")
+    return (location_clean.upper(), f"Could not find airport for '{location_clean}'")
 
-def format_location_display(original: str, airport_code: str, city_name: str = None) -> str:
+def format_location_display(airport_code: str, city_name: str = None) -> str:
     """
     Format location for display.
     
     Args:
-        original: Original input
         airport_code: Resolved airport code
         city_name: Resolved city name (optional)
-        
-    Returns:
-        Formatted string for display
     """
     if city_name and city_name != airport_code:
-        return f"{city_name} ({airport_code})"
+        return f"{airport_code} ({city_name})"
     return airport_code
 
 def get_popular_airports() -> dict[str, list[tuple[str, str]]]:
